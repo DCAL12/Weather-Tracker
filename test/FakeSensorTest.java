@@ -1,3 +1,4 @@
+import models.TestSensor;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class FakeSensorTest {
 
     static {
         for (TestSensor.WeatherParameter parameter : TestSensor.WeatherParameter.values()) {
-            testSensors.add(new TestSensor(parameter, sampleRateInSeconds));
+            testSensors.add(new TestSensor(parameter));
         }
     }
 

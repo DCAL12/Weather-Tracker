@@ -1,3 +1,5 @@
+package models;
+
 public class TestSensor implements Sensor {
 
     public enum WeatherParameter {
@@ -26,14 +28,27 @@ public class TestSensor implements Sensor {
         }
     }
 
+    public static final int SECONDS_PER_DAY = 60 * 60 * 24;
+
     private WeatherParameter type;
-    static final int SECONDS_PER_DAY = 60 * 60 * 24;
+    private String id;
     private int sampleRateInSeconds;
     private int elapsedTimeInSeconds = 0;
 
-    public TestSensor(WeatherParameter type, int sampleRateInSeconds) {
+    public TestSensor(WeatherParameter type) {
         this.type = type;
+    }
+
+    public void enable(int sampleRateInSeconds) {
         this.sampleRateInSeconds = sampleRateInSeconds;
+    }
+
+    public void disable() {
+        sampleRateInSeconds = 0;
+    }
+
+    public boolean isEnabled() {
+        return (sampleRateInSeconds != 0);
     }
 
     public WeatherParameter getType() {
@@ -46,5 +61,15 @@ public class TestSensor implements Sensor {
         return (type.getRange() / 2)
                 * Math.sin(SECONDS_PER_DAY * 2 * Math.PI * elapsedTimeInSeconds)
                 +  (type.getRange() / 2) + type.getMinValue();
+    }
+
+    @Override
+    public String toString() {
+        String delimiter = " ";
+        return (
+            Boolean.toString(isEnabled()) + delimiter +
+            id + delimiter +
+            type
+        );
     }
 }

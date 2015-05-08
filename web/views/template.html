@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <meta name="description" content="An web interface for tracking weather data">
+    <link rel="stylesheet" media="screen" href="/stylesheets/style.css">
+    <!-- Adds HTML5 element support for earlier versions of IE -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<header role="banner">
+    <h1><a href="/"  title="Weather Tracker">Weather Tracker</a></h1>
+
+    <nav role="navigation" class="siteNavigation">
+        <ul>
+            <li><a href="/" title="Home">Home</a></li>
+            <li><a href="/setup" title="Setup">Setup</a></li>
+            <li><a href="/data" title="Data">Data</a></li>
+            <li><a href="/notifications" title="Notifications">Notifications</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main role="main" class="main">
+    {{main}}
+</main>
+
+<footer>
+</footer>
+
+</body>
+</html>
