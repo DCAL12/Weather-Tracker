@@ -1,4 +1,4 @@
-import models.TestSensor;
+import mock.SensorMock;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -10,22 +10,22 @@ public class FakeSensorTest {
 
     double errorMargin = 0.001;
     static int sampleRateInSeconds = 1;
-    static List<TestSensor> testSensors = new ArrayList<>();
+    static List<SensorMock> sensorMocks = new ArrayList<>();
 
     static {
-        for (TestSensor.WeatherParameter parameter : TestSensor.WeatherParameter.values()) {
-            testSensors.add(new TestSensor(parameter));
+        for (SensorMock.Type parameter : SensorMock.Type.values()) {
+            sensorMocks.add(new SensorMock(parameter));
         }
     }
 
     @Test
     public void getConsistentMeasurements() throws Exception {
 
-        testSensors.forEach((testSensor) -> {
+        sensorMocks.forEach((testSensor) -> {
             double initialMeasurement = testSensor.getMeasurement();
             double finalMeasurement = 0;
 
-            for(int i = 0; i<TestSensor.SECONDS_PER_DAY; i++) {
+            for(int i = 0; i< SensorMock.SECONDS_PER_DAY; i++) {
                 finalMeasurement = testSensor.getMeasurement();
             }
             assertEquals(testSensor.getType() + ": measurements between days do not match",
@@ -36,10 +36,10 @@ public class FakeSensorTest {
     @Test
     public void getMaxMeasurements() throws Exception {
 
-        testSensors.forEach((testSensor) -> {
+        sensorMocks.forEach((testSensor) -> {
             double measurement = testSensor.getMeasurement();
 
-            for(int i = 0; i<TestSensor.SECONDS_PER_DAY; i++) {
+            for(int i = 0; i< SensorMock.SECONDS_PER_DAY; i++) {
                 double nextMeasurement = testSensor.getMeasurement();
                 measurement = nextMeasurement > measurement ?
                         nextMeasurement : measurement;
@@ -52,10 +52,10 @@ public class FakeSensorTest {
     @Test
     public void getMinMeasurements() throws Exception {
 
-        testSensors.forEach((testSensor) -> {
+        sensorMocks.forEach((testSensor) -> {
             double measurement = testSensor.getMeasurement();
 
-            for(int i = 0; i<TestSensor.SECONDS_PER_DAY; i++) {
+            for(int i = 0; i< SensorMock.SECONDS_PER_DAY; i++) {
                 double nextMeasurement = testSensor.getMeasurement();
                 measurement = nextMeasurement < measurement ?
                         nextMeasurement : measurement;

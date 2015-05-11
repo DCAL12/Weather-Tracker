@@ -1,8 +1,8 @@
 package controllers;
 
 import models.Sensor;
-import models.TestSensor;
 import services.HTMLPageBuilder;
+import services.SensorDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,12 +16,8 @@ import java.util.List;
 @WebServlet("/setup")
 public class setup extends HttpServlet {
 
-    private static final String SENSOR_ROW_TEMPLATE =
-            "<tr>" +    "<td>%s</td>" + "<td>%s</td>" + "<td>%s</td>" + "</tr>";
-    // SENSOR ROW DATA:     enabled         ID           Sensor Type
-
+    private SensorDAO dao;
     private List<Sensor> sensors = new ArrayList<>();
-    private final int sampleRateInSeconds = 1;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -29,24 +25,26 @@ public class setup extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-
         HTMLPageBuilder html = new HTMLPageBuilder(getServletContext(), "/views/setup.html");
         html.setContent("{{title}}", "Setup");
 
-        // Available Sensors
-        sensors.add(new TestSensor(TestSensor.WeatherParameter.TEMPERATURE));
-        sensors.add(new TestSensor(TestSensor.WeatherParameter.HUMIDITY));
-        sensors.add(new TestSensor(TestSensor.WeatherParameter.LIGHT));
+        dao = new SensorDAO();
+        sensors = dao.getAllSensors();
 
         StringBuilder tableRows = new StringBuilder();
+        String sensorRowDetailTemplate = html.readTemplate("/views/sensorDetail.html");
 
         sensors.forEach(sensor -> {
-            String[] rowData = sensor.toString().split(" ");
-            tableRows.append(String.format(SENSOR_ROW_TEMPLATE, rowData[0],rowData[1], rowData[2]));
+            String tableRow = sensorRowDetailTemplate;
+            tableRow = tableRow.replace("{{enabled}}", Boolean.toString(sensor.isEnabled()));
+            tableRow = tableRow.replace("{{ID}}", Integer.toString(sensor.getId()));
+            tableRow = tableRow.replace("{{label}}", sensor.getLabel());
+            tableRows.append(tableRow);
         });
 
         html.setContent("{{sensors}}", tableRows.toString());
 
+        response.setContentType("text/html");
         response.getWriter().println(html);
         response.getWriter().close();
     }
