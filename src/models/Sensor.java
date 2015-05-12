@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Scanner;
 
@@ -48,10 +49,10 @@ public class Sensor {
 
         try {
             Scanner scanner = new Scanner(port);
-            double value = scanner.nextDouble();
+            float value = scanner.nextFloat();
             scanner.close();
 
-            measurement = new Measurement(new Date(System.currentTimeMillis()), value);
+            measurement = new Measurement(new Timestamp(System.currentTimeMillis()), value);
         } catch (IOException e) {
             System.out.println("models.Sensor.getCurrentMeasurement error: " + e.getMessage());
         }

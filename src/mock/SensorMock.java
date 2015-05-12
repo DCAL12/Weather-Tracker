@@ -3,7 +3,6 @@ package mock;
 import models.Measurement;
 import models.Sensor;
 
-import javax.servlet.ServletContext;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,15 +39,13 @@ public class SensorMock extends Sensor {
 
     private static String pathToDataPort = "/mock/ports/";
     public static final int PERIOD = 60 * 60 * 24; // 60 sec * 60 min * 24 hrs = 1 day
-    private int SAMPLE_RATE_IN_SECONDS = 1;
+    private static final int SAMPLE_RATE_IN_SECONDS = 1;
     private int elapsedTimeInSeconds = 0;
     private Type type;
-    private String mockPort;
 
     public SensorMock(Type type) {
-        super(type.ordinal(), type.toString(), false);
+        super(type.ordinal(), Integer.toString(type.ordinal()), type.toString(), false, SAMPLE_RATE_IN_SECONDS);
         this.type = type;
-        mockPort = Integer.toString(type.ordinal());
 
         runSensor();
     }
@@ -75,10 +72,5 @@ public class SensorMock extends Sensor {
             }
         };
         timer.scheduleAtFixedRate(sensorUpdater, 0, SAMPLE_RATE_IN_SECONDS * 1000);
-    }
-
-    @Override
-    public Measurement getCurrentMeasurement(ServletContext servletContext, String portName) {
-        return super.getCurrentMeasurement(servletContext, mockPort);
     }
 }

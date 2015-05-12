@@ -8,8 +8,6 @@ import models.Threshold;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SensorDAO {
 
@@ -20,7 +18,7 @@ public class SensorDAO {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/weather",
-                    "user", "123");
+                    "user", "RLXREL4Z3VfWZV54");
         } catch (SQLException e) {
             System.out.println("services.SensorDAO SQL error: " + e.getMessage());
             connection = null;
@@ -36,7 +34,7 @@ public class SensorDAO {
 
         try {
             Statement statement = connection.createStatement();
-            String sql = "SELECT * from Sensors";
+            String sql = "SELECT * from Sensor";
             ResultSet queryResults = statement.executeQuery(sql);
 
             while (queryResults.next()) {
@@ -55,7 +53,7 @@ public class SensorDAO {
         Sensor sensor = null;
 
         try {
-            String sql = "SELECT ALL from Sensors WHERE (id) VALUES (?)";
+            String sql = "SELECT * from Sensor WHERE Sensor.ID = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
@@ -104,7 +102,7 @@ public class SensorDAO {
         List<Notification> notifications = new ArrayList<>();
 
         try {
-            String sql = "SELECT ALL from Notifications WHERE (sensor_ID) VALUES (?)";
+            String sql = "SELECT * from Notification WHERE Notification.sensor_ID = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
@@ -116,7 +114,7 @@ public class SensorDAO {
                         queryResults.getString("email"),
                         new Threshold(
                                 Threshold.Operator.valueOf(queryResults.getString("operator")),
-                                queryResults.getDouble("threshold")
+                                queryResults.getFloat("threshold")
                         )
                 ));
             }
@@ -131,7 +129,7 @@ public class SensorDAO {
         List<Measurement> measurements = new ArrayList<>();
 
         try {
-            String sql = "SELECT ALL from Measurements WHERE (sensor_ID) VALUES (?)";
+            String sql = "SELECT * from Measurement WHERE Measurement.sensor_ID = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
@@ -139,8 +137,8 @@ public class SensorDAO {
 
             while (queryResults.next()) {
                 measurements.add(new Measurement(
-                        queryResults.getDate("timeStamp"),
-                        queryResults.getDouble("value")
+                        queryResults.getTimestamp("timeStamp"),
+                        queryResults.getFloat("value")
                         )
                 );
             }
@@ -166,9 +164,10 @@ public class SensorDAO {
 
     private void toggleSensorInDB(int sensorID, boolean setEnabled) {
         try {
-            String sql = "UPDATE Sensors SET (enabled) VALUES (?);
+            String sql = "UPDATE Sensor SET Sensor.enabled = ? WHERE Sensor.ID = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setBoolean(1, setEnabled);
+            statement.setInt(2, sensorID);
 
             statement.executeUpdate(sql);
 
@@ -181,13 +180,13 @@ public class SensorDAO {
         clearData(sensorID);
         try {
             String sql = "INSERT INTO Measurement (" +
-                    "Sensor_ID, " +
-                    "Measurement_Timestamp, " +
-                    "Measurement_Value," +
+                    "sensor_ID, " +
+                    "timestamp, " +
+                    "value" +
                     ") VALUES (?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
-            statement.setDate(2, measurement.getTimeStamp());
+            statement.setTimestamp(2, measurement.getTimeStamp());
             statement.setDouble(3, measurement.getValue());
 
             statement.executeUpdate(sql);
@@ -199,7 +198,7 @@ public class SensorDAO {
 
     private void clearData(int sensorID) {
         try {
-            String sql = "DELETE FROM Measurement (Sensor_ID) VALUES (?)";
+            String sql = "DELETE FROM Measurement WHERE sensor_ID = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
@@ -212,17 +211,17 @@ public class SensorDAO {
 
     public void addNotification(int sensorID, Notification notification) {
         try {
-            String sql = "INSERT INTO notifications (" +
-                    "sensorID, " +
-                    "notification_email, " +
-                    "notification_operator," +
-                    "notification_threshold" +
+            String sql = "INSERT INTO Notification (" +
+                    "sensor_ID, " +
+                    "email, " +
+                    "operator," +
+                    "threshold" +
                     ") VALUES (?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
             statement.setString(2, notification.getEmail());
             statement.setString(3, notification.getThreshold().getOperator().toString());
-            statement.setDouble(4, notification.getThreshold().getValue());
+            statement.setFloat(4, notification.getThreshold().getValue());
 
             statement.executeUpdate(sql);
 
@@ -233,7 +232,7 @@ public class SensorDAO {
 
     public void deleteNotification(int notificationID) {
         try {
-            String sql = "DELETE FROM notifications WHERE (id) VALUES (?);
+            String sql = "DELETE FROM Notification WHERE Notification.ID = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, notificationID);
 

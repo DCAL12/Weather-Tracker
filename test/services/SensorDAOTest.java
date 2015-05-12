@@ -13,10 +13,10 @@ import static org.junit.Assert.*;
 
 public class SensorDAOTest {
 
-    private SensorDAO dao;
+    private SensorDAO dao = new SensorDAO();
     private static List<Sensor> testSensors = new ArrayList<>();
     private Notification testNotification = new Notification("test@test.net",
-            new Threshold(Threshold.Operator.GREATER_THAN_OR_EQUAL, 10.1));
+            new Threshold(Threshold.Operator.GREATER_THAN_OR_EQUAL, 10.1f));
 
     static {
         for (SensorMock.Type type : SensorMock.Type.values()) {

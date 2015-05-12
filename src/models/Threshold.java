@@ -2,7 +2,7 @@ package models;
 
 public class Threshold {
     Operator operator;
-    double value;
+    float value;
 
     public enum Operator {
         EQUALS("="),
@@ -24,7 +24,7 @@ public class Threshold {
         }
     }
 
-    public Threshold(Operator operator, double value) {
+    public Threshold(Operator operator, float value) {
         this.operator = operator;
         this.value = value;
     }
@@ -33,7 +33,7 @@ public class Threshold {
         return operator;
     }
 
-    public double getValue() {
+    public float getValue() {
         return value;
     }
 }
