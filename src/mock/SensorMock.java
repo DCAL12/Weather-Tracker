@@ -44,7 +44,7 @@ public class SensorMock extends Sensor {
     private Type type;
 
     public SensorMock(Type type) {
-        super(type.ordinal(), Integer.toString(type.ordinal()), type.toString(), false, SAMPLE_RATE_IN_SECONDS);
+        super(type.ordinal() + 1, Integer.toString(type.ordinal()) + 1, type.toString(), false, SAMPLE_RATE_IN_SECONDS);
         this.type = type;
 
         runSensor();

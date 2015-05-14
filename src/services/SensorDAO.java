@@ -17,7 +17,7 @@ public class SensorDAO {
 
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/weather",
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/weather",
                     "user", "RLXREL4Z3VfWZV54");
         } catch (SQLException e) {
             System.out.println("services.SensorDAO SQL error: " + e.getMessage());
@@ -57,7 +57,7 @@ public class SensorDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
-            ResultSet queryResult = statement.executeQuery(sql);
+            ResultSet queryResult = statement.executeQuery();
             sensor = createSensor(queryResult);
 
             sensor.setMeasurements(populateMeasurements(sensor.getId()));
@@ -75,6 +75,7 @@ public class SensorDAO {
         Sensor sensor = null;
 
         try {
+            queryResult.next();
             sensor = new Sensor(
                     queryResult.getInt("id"),
                     queryResult.getString("port"),
@@ -85,7 +86,6 @@ public class SensorDAO {
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.createSensor error: " + e.getMessage());
         }
-
         return sensor;
     }
 
@@ -106,14 +106,14 @@ public class SensorDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
-            ResultSet queryResults = statement.executeQuery(sql);
+            ResultSet queryResults = statement.executeQuery();
 
             while (queryResults.next()) {
                 notifications.add(new Notification(
                         queryResults.getInt("id"),
                         queryResults.getString("email"),
                         new Threshold(
-                                Threshold.Operator.valueOf(queryResults.getString("operator")),
+                                Threshold.Operator.values()[queryResults.getInt("operator")],
                                 queryResults.getFloat("threshold")
                         )
                 ));
@@ -133,7 +133,7 @@ public class SensorDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
-            ResultSet queryResults = statement.executeQuery(sql);
+            ResultSet queryResults = statement.executeQuery();
 
             while (queryResults.next()) {
                 measurements.add(new Measurement(
@@ -169,7 +169,7 @@ public class SensorDAO {
             statement.setBoolean(1, setEnabled);
             statement.setInt(2, sensorID);
 
-            statement.executeUpdate(sql);
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.toggleSensorInDB error: " + e.getMessage());
@@ -189,7 +189,7 @@ public class SensorDAO {
             statement.setTimestamp(2, measurement.getTimeStamp());
             statement.setDouble(3, measurement.getValue());
 
-            statement.executeUpdate(sql);
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.recordData error: " + e.getMessage());
@@ -202,7 +202,7 @@ public class SensorDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 
-            statement.executeUpdate(sql);
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.recordData error: " + e.getMessage());
@@ -220,10 +220,10 @@ public class SensorDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
             statement.setString(2, notification.getEmail());
-            statement.setString(3, notification.getThreshold().getOperator().toString());
+            statement.setInt(3, notification.getThreshold().getOperator().ordinal());
             statement.setFloat(4, notification.getThreshold().getValue());
 
-            statement.executeUpdate(sql);
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.addNotification error: " + e.getMessage());
@@ -236,7 +236,7 @@ public class SensorDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, notificationID);
 
-            statement.executeUpdate(sql);
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.deleteNotification error: " + e.getMessage());

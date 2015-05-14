@@ -27,6 +27,8 @@ public class SensorDAOTest {
     @Test
     public void testGetSensors() throws Exception {
         List<Sensor> daoSensors = dao.getAllSensors();
+        System.out.println(daoSensors);
+        System.out.println(testSensors);
         assertTrue("getAllSensors error", daoSensors.containsAll(testSensors));
     }
 
@@ -100,8 +102,7 @@ public class SensorDAOTest {
             Sensor daoSensor = dao.getSensorDetails(testSensor.getId());
             List<Notification> notifications = daoSensor.getNotifications();
 
-            int testNotificationId = notifications.get(notifications.indexOf(testNotification)).getId();
-            dao.deleteNotification(testNotificationId);
+            dao.deleteNotification(testNotification.getId());
 
             notifications = dao.getSensorDetails(testSensor.getId()).getNotifications();
 
