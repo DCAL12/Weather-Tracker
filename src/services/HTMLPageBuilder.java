@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 public class HTMLPageBuilder {
 
-    private final String siteTemplate = "/views/template.html";
+    private static final String SITE_TEMPLATE_LOCATION = "/views/template.html";
     private final Charset charset = StandardCharsets.UTF_8;
     private ServletContext servletContext;
     private String responseHTML;
@@ -18,7 +18,7 @@ public class HTMLPageBuilder {
     public HTMLPageBuilder(ServletContext servletContext, String pageHTMLPath) throws IOException {
         this.servletContext = servletContext;
 
-        responseHTML = readTemplate(siteTemplate);
+        responseHTML = readTemplate(SITE_TEMPLATE_LOCATION);
         setContent("{{main}}", readTemplate(pageHTMLPath));
     }
 

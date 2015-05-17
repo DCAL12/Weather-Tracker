@@ -36,6 +36,24 @@ public class Threshold {
     public float getValue() {
         return value;
     }
+
+    public Boolean isExceeded(float observation) {
+        switch (operator) {
+            case EQUALS:
+                return observation == value;
+            case NOT_EQUAL:
+                return observation != value;
+            case GREATER_THAN:
+                return observation > value;
+            case LESS_THAN:
+                return observation < value;
+            case GREATER_THAN_OR_EQUAL:
+                return observation >= value;
+            case LESS_THAN_OR_EQUAL:
+                return  observation <= value;
+        }
+        return false;
+    }
 }
 
 

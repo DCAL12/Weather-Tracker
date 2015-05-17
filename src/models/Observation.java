@@ -1,13 +1,12 @@
 package models;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
-public class Measurement {
+public class Observation {
     private Timestamp timeStamp;
     private float value;
 
-    public Measurement(Timestamp timeStamp, float value) {
+    public Observation(Timestamp timeStamp, float value) {
         this.timeStamp = timeStamp;
         this.value = value;
     }

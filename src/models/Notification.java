@@ -1,18 +1,19 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Notification {
     private int id;
-    private String email;
+    private List<String> recipients = new ArrayList<>();
     private Threshold threshold;
 
-    public Notification(int id, String email, Threshold threshold) {
+    public Notification(int id, Threshold threshold) {
         this.id = id;
-        this.email = email;
         this.threshold = threshold;
     }
 
-    public Notification(String email, Threshold threshold) {
-        this.email = email;
+    public Notification(Threshold threshold) {
         this.threshold = threshold;
     }
 
@@ -20,11 +21,15 @@ public class Notification {
         return id;
     }
 
-    public String getEmail() {
-        return email;
+    public List<String> getRecipients() {
+        return recipients;
     }
 
     public Threshold getThreshold() {
         return threshold;
+    }
+
+    public void addRecipient(String email) {
+        recipients.add(email);
     }
 }

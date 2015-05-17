@@ -2,27 +2,19 @@ package models;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Scanner;
 
 public class Sensor {
-    private static String pathToDataPort = "";
     private int id;
-    private String portName;
     private String label;
-    private boolean enabled;
+    protected Path port;
     private int sampleRate;
-    private List<Measurement> measurements;
-    private List<Notification> notifications;
 
-    public Sensor(int id, String portName, String label, boolean enabled, int sampleRate) {
+    public Sensor(int id, String label, Path port, int sampleRate) {
         this.id = id;
-        this.portName = portName;
         this.label = label;
-        this.enabled = enabled;
+        this.port = port;
         this.sampleRate = sampleRate;
     }
 
@@ -34,45 +26,25 @@ public class Sensor {
         return label;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
 
     public int getSampleRate() {
         return sampleRate;
     }
 
-    public Measurement getCurrentMeasurement() {
+    public Observation getObservation() {
 
-        Measurement measurement = null;
-        Path port = Paths.get(pathToDataPort + portName);
+        Observation observation = null;
 
         try {
             Scanner scanner = new Scanner(port);
             float value = scanner.nextFloat();
             scanner.close();
 
-            measurement = new Measurement(new Timestamp(System.currentTimeMillis()), value);
+            observation = new Observation(new Timestamp(System.currentTimeMillis()), value);
         } catch (IOException e) {
-            System.out.println("models.Sensor.getCurrentMeasurement error: " + e.getMessage());
+            System.out.println("models.Sensor.getObservation " + e.getMessage());
         }
 
-        return measurement;
-    }
-
-    public List<Measurement> getMeasurements() {
-        return measurements;
-    }
-
-    public List<Notification> getNotifications() {
-        return notifications;
-    }
-
-    public void setMeasurements(List<Measurement> measurements) {
-        this.measurements = measurements;
-    }
-
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
+        return observation;
     }
 }

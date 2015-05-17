@@ -1,7 +1,7 @@
 package services;
 
 import mock.SensorMock;
-import models.Measurement;
+import models.Observation;
 import models.Notification;
 import models.Sensor;
 import models.Threshold;
@@ -59,7 +59,7 @@ public class SensorDAOTest {
 
         testSensors.forEach(testSensor -> {
             Sensor daoSensor = dao.getSensorDetails(testSensor.getId());
-            List<Measurement> measurements = new ArrayList<>();
+            List<Observation> observations = new ArrayList<>();
 
             // restart the recording to clear previous data
             dao.toggleSensor(daoSensor.getId());
@@ -74,13 +74,13 @@ public class SensorDAOTest {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    measurements.addAll(dao.getSensorDetails(testSensor.getId()).getMeasurements());
+                    observations.addAll(dao.getSensorDetails(testSensor.getId()).getObservations());
                 }
             }, 2000);
 
-            assertTrue("recordData error: no data captured", measurements.size() > 0);
+            assertTrue("recordData error: no data captured", observations.size() > 0);
             assertTrue("recordData error: previous data not cleared on start",
-                    measurements.get(0).getTimeStamp().after(recordStartTime));
+                    observations.get(0).getTimeStamp().after(recordStartTime));
         });
     }
 
