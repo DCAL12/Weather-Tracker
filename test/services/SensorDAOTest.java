@@ -1,12 +1,9 @@
 package services;
 
-import mock.SensorMock;
-import models.Observation;
-import models.Notification;
 import models.Sensor;
-import models.Threshold;
 import org.junit.Test;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -17,9 +14,8 @@ public class SensorDAOTest {
     private static List<Sensor> testSensors = new ArrayList<>();
 
     static {
-        for (SensorMock.Type type : SensorMock.Type.values()) {
-            testSensors.add(new SensorMock(type));
-        }
+        // Test Sensors in Database
+        testSensors.add(new Sensor(1, "temperature", Paths.get("port"), 1000));
     }
 
     @Test
