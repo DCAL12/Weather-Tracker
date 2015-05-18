@@ -11,6 +11,16 @@
         request.onload = function() {
 
             var sensors = this.responseText;
+
+            /*Build Notification Table with notifications grouped by sensor:
+            *
+            * sensor        trigger     recipients
+            * temperature   <5          bob@home.net
+            *                           bill@home.net
+            *
+            *               >=30        bob@home.net
+            */
+
             sensors.forEach(function(sensor) {
 
                 var sensorRow = document.createElement("tr"),
