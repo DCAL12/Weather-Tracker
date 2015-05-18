@@ -3,8 +3,8 @@ package controllers.setup;
 import models.Observation;
 import models.Sensor;
 import services.*;
-import util.JSONBuilder;
 
+import com.google.gson.Gson;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -71,7 +71,8 @@ public class ConfigureSensors extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("application/json");
-        response.getWriter().print(JSONBuilder.sensorListToJSON(availableSensors));
+        Gson gson = new Gson();
+        response.getWriter().print(gson.toJson(availableSensors));
         response.getWriter().close();
     }
 }

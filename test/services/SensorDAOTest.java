@@ -15,7 +15,7 @@ public class SensorDAOTest {
 
     static {
         // Test Sensors in Database
-        testSensors.add(new Sensor(1, "temperature", Paths.get("port"), 1000));
+        testSensors.add(new Sensor(1, "temperature", Paths.get("port")));
     }
 
     @Test

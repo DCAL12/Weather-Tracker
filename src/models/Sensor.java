@@ -3,20 +3,21 @@ package models;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Scanner;
 
 public class Sensor {
     private int id;
     private String label;
     protected Path port;
-    private int sampleRate;
     private boolean enabled;
+    private List<Observation> observations;
+    private List<Notification> notifications;
 
-    public Sensor(int id, String label, Path port, int sampleRate) {
+    public Sensor(int id, String label, Path port) {
         this.id = id;
         this.label = label;
         this.port = port;
-        this.sampleRate = sampleRate;
     }
 
     public int getId() {
@@ -25,10 +26,6 @@ public class Sensor {
 
     public String getLabel() {
         return label;
-    }
-
-    public int getSampleRate() {
-        return sampleRate;
     }
 
     public boolean isEnabled() {
@@ -52,7 +49,14 @@ public class Sensor {
         } catch (IOException e) {
             System.out.println("models.Sensor.getObservation " + e.getMessage());
         }
-
         return observation;
+    }
+
+    public void setObservations(List<Observation> observations) {
+        this.observations = observations;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
