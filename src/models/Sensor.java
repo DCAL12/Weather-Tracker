@@ -10,6 +10,7 @@ public class Sensor {
     private String label;
     protected Path port;
     private int sampleRate;
+    private boolean enabled;
 
     public Sensor(int id, String label, Path port, int sampleRate) {
         this.id = id;
@@ -26,9 +27,16 @@ public class Sensor {
         return label;
     }
 
-
     public int getSampleRate() {
         return sampleRate;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void toggle() {
+        enabled = !enabled;
     }
 
     public Observation getObservation() {

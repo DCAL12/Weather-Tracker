@@ -1,6 +1,6 @@
 package controllers.notifications;
 
-import services.HTMLPageBuilder;
+import util.HTMLPageBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

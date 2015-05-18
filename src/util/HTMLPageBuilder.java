@@ -1,4 +1,4 @@
-package services;
+package util;
 
 import javax.servlet.ServletContext;
 import java.io.IOException;

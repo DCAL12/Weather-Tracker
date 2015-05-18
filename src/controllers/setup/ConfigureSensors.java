@@ -1,8 +1,9 @@
-package controllers;
+package controllers.setup;
 
 import models.Observation;
 import models.Sensor;
 import services.*;
+import util.JSONBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-@WebServlet(name = "SetupSensors", urlPatterns = "/setup")
-public class SetupSensors extends HttpServlet {
+@WebServlet(name = "ConfigureSensors", urlPatterns = "/configure")
+public class ConfigureSensors extends HttpServlet {
 
     private static final long OBSERVATION_SAMPLE_INTERVAL = 1000 * 5; // in milliseconds
 
@@ -34,16 +35,17 @@ public class SetupSensors extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         int sensorID = Integer.parseInt(request.getParameter("sensorID"));
+        Sensor sensor = availableSensors.get(sensorID);
         TaskDispatcher task;
 
-        if (observationRecorders.containsKey(sensorID)) {
+        if (sensor.isEnabled()) {
+            // stop sensor recording
             task = observationRecorders.get(sensorID);
             task.clearTask();
             observationRecorders.remove(sensorID);
         }
         else {
-
-            Sensor sensor = availableSensors.get(sensorID);
+            // start sensor recording
             task = new TaskDispatcher( () -> {
 
                 // Record observations at OBSERVATION_SAMPLE_INTERVAL
@@ -63,29 +65,13 @@ public class SetupSensors extends HttpServlet {
 
             observationRecorders.put(sensorID, task);
         }
+        sensor.toggle();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        HTMLPageBuilder html = new HTMLPageBuilder(getServletContext(), "/views/setup.html");
-        html.setContent("{{title}}", "Setup");
-
-        StringBuilder tableRows = new StringBuilder();
-        String sensorRowDetailTemplate = html.readTemplate("/views/sensorDetail.html");
-
-        availableSensors.forEach( (sensor) -> {
-            String tableRow = sensorRowDetailTemplate;
-            tableRow = tableRow.replace("{{enabled}}",
-                    Boolean.toString(observationRecorders.containsKey(sensor.getId())));
-            tableRow = tableRow.replace("{{ID}}", Integer.toString(sensor.getId()));
-            tableRow = tableRow.replace("{{label}}", sensor.getLabel());
-            tableRows.append(tableRow);
-        });
-
-        html.setContent("{{sensors}}", tableRows.toString());
-
-        response.setContentType("text/html");
-        response.getWriter().println(html);
+        response.setContentType("application/json");
+        response.getWriter().print(JSONBuilder.sensorListToJSON(availableSensors));
         response.getWriter().close();
     }
 }
