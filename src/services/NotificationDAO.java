@@ -9,19 +9,31 @@ import java.util.List;
 
 public class NotificationDAO extends DAO {
 
+    private static NotificationDAO instance;
+    private NotificationDAO() {
+        super();
+    }
+    public static NotificationDAO getInstance() {
+        if (instance == null) {
+            instance = new NotificationDAO();
+        }
+        return instance;
+    }
+
     public List<Notification> getNotifications(int sensorID) {
 
+        String outerSql =
+                "SELECT * from Notification" +
+                        "JOIN Recipient WHERE Notification.id = Recipient.notification_id " +
+                        "AND Notification.sensor_ID = ?";
         List<Notification> notifications = new ArrayList<>();
 
-        try {
-            String sql =
-                    "SELECT * from Notification" +
-                    "JOIN Recipient WHERE Notification.id = Recipient.notification_id " +
-                    "AND Notification.sensor_ID = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, sensorID);
+        try (Connection connection = getConnection();
+             PreparedStatement outerStatement = connection.prepareStatement(outerSql)
+        ){
+            outerStatement.setInt(1, sensorID);
 
-            ResultSet queryResults = statement.executeQuery();
+            ResultSet queryResults = outerStatement.executeQuery();
 
             while (queryResults.next()) {
 
@@ -32,12 +44,12 @@ public class NotificationDAO extends DAO {
 
 
                 // Populate recipients for each notification
-                try {
-                    sql = "SELECT email from Recipient WHERE notification_ID = ?";
-                    statement = connection.prepareStatement(sql);
-                    statement.setInt(1, notificationID);
+                String innerSql = "SELECT email from Recipient WHERE notification_ID = ?";
+                try (PreparedStatement innerStatement = connection.prepareStatement(innerSql)){
 
-                    queryResults = statement.executeQuery();
+                    innerStatement.setInt(1, notificationID);
+
+                    queryResults = innerStatement.executeQuery();
 
                     while (queryResults.next()) {
                         newNotification.addRecipient(queryResults.getString("email"));
@@ -46,7 +58,6 @@ public class NotificationDAO extends DAO {
                 } catch (SQLException e) {
                     System.out.println("services.NotificationDAO.getNotifications error: " + e.getMessage());
                 }
-
                 notifications.add(newNotification);
             }
 
@@ -57,14 +68,16 @@ public class NotificationDAO extends DAO {
     }
 
     public void addNotification(int sensorID, Notification notification) {
-        try {
-            String sql =
-                    "INSERT INTO Notification (" +
-                    "sensor_ID, " +
-                    "operator," +
-                    "threshold" +
-                    ") VALUES (?,?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
+
+        String sql =
+                "INSERT INTO Notification (" +
+                        "sensor_ID, " +
+                        "operator," +
+                        "threshold" +
+                        ") VALUES (?,?,?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, sensorID);
             statement.setInt(2, notification.getThreshold().getOperator().ordinal());
             statement.setFloat(3, notification.getThreshold().getValue());
@@ -77,13 +90,15 @@ public class NotificationDAO extends DAO {
     }
 
     public void addRecipient(int notificationID, String email) {
-        try {
-            String sql =
-                    "INSERT INTO Recipient (" +
-                            "notification_ID, " +
-                            "email" +
-                            ") VALUES (?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
+
+        String sql =
+                "INSERT INTO Recipient (" +
+                        "notification_ID, " +
+                        "email" +
+                        ") VALUES (?,?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, notificationID);
             statement.setString(2, email);
 
@@ -96,13 +111,14 @@ public class NotificationDAO extends DAO {
 
     public void updateNotification(int notificationID, Notification notification) {
 
-        try {
-            String sql =
-                    "UPDATE Notification SET " +
-                    "operator = ?, " +
-                    "threshold = ?" +
-                    "WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
+        String sql =
+                "UPDATE Notification SET " +
+                        "operator = ?, " +
+                        "threshold = ?" +
+                        "WHERE id = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setString(1, notification.getThreshold().getOperator().toString());
             statement.setFloat(2, notification.getThreshold().getValue());
             statement.setInt(3, notificationID);
@@ -115,9 +131,11 @@ public class NotificationDAO extends DAO {
     }
 
     public void deleteNotification(int notificationID) {
-        try {
-            String sql = "DELETE FROM Notification WHERE Notification.ID = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
+
+        String sql = "DELETE FROM Notification WHERE Notification.ID = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, notificationID);
 
             statement.executeUpdate();
@@ -131,12 +149,14 @@ public class NotificationDAO extends DAO {
     }
 
     public void deleteRecipient(int notificationID, String email) {
-        try {
-            String sql =
-                    "DELETE FROM Recipient " +
-                    "WHERE notification_ID = ? " +
-                    "AND email = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
+
+        String sql =
+                "DELETE FROM Recipient " +
+                        "WHERE notification_ID = ? " +
+                        "AND email = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, notificationID);
             statement.setString(2, email);
 
@@ -148,10 +168,11 @@ public class NotificationDAO extends DAO {
     }
 
     private void deleteRecipients(int notificationID) {
-        try {
-            String sql =
-                    "DELETE FROM Recipient WHERE notification_ID = ? ";
-            PreparedStatement statement = connection.prepareStatement(sql);
+
+        String sql = "DELETE FROM Recipient WHERE notification_ID = ? ";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, notificationID);
 
             statement.executeUpdate();

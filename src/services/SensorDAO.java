@@ -2,20 +2,31 @@ package services;
 
 import models.Sensor;
 
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SensorDAO extends DAO {
 
+    private static SensorDAO instance;
+    private SensorDAO() {
+        super();
+    }
+    public static SensorDAO getInstance() {
+        if (instance == null) {
+            instance = new SensorDAO();
+        }
+        return instance;
+    }
+
     public List<Sensor> getSensors() {
 
+        String sql = "SELECT * from Sensor";
         List<Sensor> results = new ArrayList<>();
 
-        try {
-            Statement statement = connection.createStatement();
-            String sql = "SELECT * from Sensor";
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement()
+        ){
             ResultSet queryResults = statement.executeQuery(sql);
 
             while (queryResults.next()) {
@@ -30,13 +41,13 @@ public class SensorDAO extends DAO {
 
     public Sensor getSensor(int sensorID) {
 
+        String sql = "SELECT * from Sensor WHERE Sensor.ID = ?";
         Sensor sensor = null;
 
-        try {
-            String sql = "SELECT * from Sensor WHERE Sensor.ID = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, sensorID);
-
             ResultSet queryResult = statement.executeQuery();
 
             if (queryResult.next()) {
@@ -46,7 +57,6 @@ public class SensorDAO extends DAO {
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.getSensor error: " + e.getMessage());
         }
-
         return sensor;
     }
 

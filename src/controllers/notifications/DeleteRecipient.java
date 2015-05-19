@@ -13,7 +13,7 @@ import java.io.IOException;
 public class DeleteRecipient extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        NotificationDAO notificationDAO = new NotificationDAO();
+        NotificationDAO notificationDAO = NotificationDAO.getInstance();
 
         notificationDAO.deleteRecipient(
                 Integer.parseInt(request.getParameter("notificationID")),

@@ -1,5 +1,7 @@
-package models;
+package util;
 
+import models.Observation;
+import models.Sensor;
 import org.junit.Test;
 import util.BuildJSON;
 
@@ -9,7 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class SimpleTest {
+public class BuildJSONTest {
 
     @Test
     public void testWriteJSON() throws Exception {

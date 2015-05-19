@@ -19,9 +19,9 @@ public class ToggleSensor extends HttpServlet {
 
     private static final long OBSERVATION_SAMPLE_INTERVAL = 1000 * 5; // in milliseconds
 
-    private static SensorDAO sensorDAO = new SensorDAO();
-    private static ObservationDAO observationDAO = new ObservationDAO();
-    private static NotificationDAO notificationDAO = new NotificationDAO();
+    private static SensorDAO sensorDAO = SensorDAO.getInstance();
+    private static ObservationDAO observationDAO = ObservationDAO.getInstance();
+    private static NotificationDAO notificationDAO = NotificationDAO.getInstance();
 
     private static List<Sensor> availableSensors = new ArrayList<>();
     private static Hashtable<Integer, TaskDispatcher> observationRecorders = new Hashtable<>();

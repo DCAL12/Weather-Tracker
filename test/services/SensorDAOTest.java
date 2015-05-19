@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 public class SensorDAOTest {
 
-    private SensorDAO dao = new SensorDAO();
+    private SensorDAO dao = SensorDAO.getInstance();
     private static List<Sensor> testSensors = new ArrayList<>();
 
     static {

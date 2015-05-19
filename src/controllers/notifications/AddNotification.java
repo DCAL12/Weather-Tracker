@@ -15,7 +15,7 @@ import java.io.IOException;
 public class AddNotification extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        NotificationDAO notificationDAO = new NotificationDAO();
+        NotificationDAO notificationDAO = NotificationDAO.getInstance();
 
         notificationDAO.addNotification(
                 Integer.parseInt(request.getParameter("sensorID")),

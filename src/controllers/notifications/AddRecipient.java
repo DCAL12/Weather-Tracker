@@ -13,7 +13,7 @@ import java.io.IOException;
 public class AddRecipient extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        NotificationDAO notificationDAO = new NotificationDAO();
+        NotificationDAO notificationDAO = NotificationDAO.getInstance();
 
         notificationDAO.addRecipient(
                 Integer.parseInt(request.getParameter("notificationID")),

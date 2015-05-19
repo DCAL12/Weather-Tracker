@@ -1,6 +1,5 @@
 package controllers.setup;
 
-import models.Observation;
 import models.Sensor;
 import services.*;
 import util.BuildJSON;
@@ -12,13 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 @WebServlet(name = "ConfigureSensors", urlPatterns = "/configure")
 public class GetConfiguration extends HttpServlet {
 
-    private static SensorDAO sensorDAO = new SensorDAO();
+    private static SensorDAO sensorDAO = SensorDAO.getInstance();
     private static List<Sensor> availableSensors = new ArrayList<>();
 
     static {

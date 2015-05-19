@@ -2,6 +2,7 @@ package services;
 
 import models.Observation;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,12 +11,25 @@ import java.util.List;
 
 public class ObservationDAO extends DAO {
 
+    private static ObservationDAO instance;
+    private ObservationDAO() {
+        super();
+    }
+    public static ObservationDAO getInstance() {
+        if (instance == null) {
+            instance = new ObservationDAO();
+        }
+        return instance;
+    }
+
     public List<Observation> getObservations(int sensorID) {
+
+        String sql = "SELECT * from Observation WHERE Observation.sensor_ID = ?";
         List<Observation> observations = new ArrayList<>();
 
-        try {
-            String sql = "SELECT * from Observation WHERE Observation.sensor_ID = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, sensorID);
 
             ResultSet queryResults = statement.executeQuery();
@@ -36,13 +50,14 @@ public class ObservationDAO extends DAO {
 
     public void addObservation(int sensorID, Observation observation) {
 
-        try {
-            String sql = "INSERT INTO Measurement (" +
-                    "sensor_ID, " +
-                    "timestamp, " +
-                    "value" +
-                    ") VALUES (?,?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
+        String sql = "INSERT INTO Measurement (" +
+                "sensor_ID, " +
+                "timestamp, " +
+                "value" +
+                ") VALUES (?,?,?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, sensorID);
             statement.setTimestamp(2, observation.getTimeStamp());
             statement.setFloat(3, observation.getValue());
@@ -55,9 +70,11 @@ public class ObservationDAO extends DAO {
     }
 
     public void clearObservations(int sensorID) {
-        try {
-            String sql = "DELETE FROM Measurement WHERE sensor_ID = ?";
-            PreparedStatement statement = connection.prepareStatement(sql);
+
+        String sql = "DELETE FROM Measurement WHERE sensor_ID = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ){
             statement.setInt(1, sensorID);
 
             statement.executeUpdate();
@@ -66,5 +83,4 @@ public class ObservationDAO extends DAO {
             System.out.println("services.ObservationDAO.clearObservations error: " + e.getMessage());
         }
     }
-
 }

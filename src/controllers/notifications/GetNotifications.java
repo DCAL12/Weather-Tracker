@@ -21,8 +21,8 @@ public class GetNotifications extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        NotificationDAO notificationDAO = new NotificationDAO();
-        SensorDAO sensorDAO = new SensorDAO();
+        NotificationDAO notificationDAO = NotificationDAO.getInstance();
+        SensorDAO sensorDAO = SensorDAO.getInstance();
 
         List<Sensor> sensors = sensorDAO.getSensors();
         sensors.forEach(sensor -> sensor.setNotifications(notificationDAO.getNotifications(sensor.getId())));

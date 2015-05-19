@@ -22,8 +22,8 @@ public class GetData extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        SensorDAO sensorDAO = new SensorDAO();
-        ObservationDAO observationDAO = new ObservationDAO();
+        SensorDAO sensorDAO = SensorDAO.getInstance();
+        ObservationDAO observationDAO = ObservationDAO.getInstance();
         List<Sensor> sensors = sensorDAO.getSensors();
 
         sensors.forEach(sensor -> {
