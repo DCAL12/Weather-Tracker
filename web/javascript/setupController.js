@@ -7,12 +7,12 @@
         var setupTable = document.getElementById("configureSensors"),
             message = document.getElementById("message");
 
-        var request = new XMLHttpRequest();
-        request.open("GET", "/configure");
+        var sensorConfigurationRequest = new XMLHttpRequest();
+        sensorConfigurationRequest.open("GET", "/configure");
 
         message.textContent = "loading...";
 
-        request.onload = function() {
+        sensorConfigurationRequest.onload = function() {
 
             var sensors = JSON.parse(this.responseText);
 
@@ -24,16 +24,29 @@
                         toggleButton = document.createElement("button"),
                         labelElement = document.createElement("td");
 
-                    toggleButton.textContent = sensor.enabled ? 'enabled' : 'disabled';
+                    toggleButton.setState = function(isEnabled) {
+                        toggleButton.textContent = isEnabled ? 'enabled' : 'disabled';
+                        toggleButton.setAttribute("class", toggleButton.textContent);
+                    };
+                    toggleButton.setState(sensor.enabled);
+
                     toggleButton.onclick = function () {
                         var toggleRequest = new XMLHttpRequest();
-                        request.open("POST", "/configure?sensorID=" + sensor.id);
+                        toggleRequest.open("POST", "/configure?sensorID=" + sensor.id);
                         toggleButton.setAttribute("class", "processing");
+                        toggleButton.disabled = true;
                         toggleButton.textContent = "processing...";
 
-                        //toggleRequest.onload() = function() {
-                        //    var changedSensor = JSON.parse(this.responseText);
-                        //};
+                        toggleRequest.onreadystatechange = function() {
+                            if (toggleRequest.readyState===4 && toggleRequest.status===200) {
+                                sensor.enabled = !sensor.enabled;
+                                toggleButton.setState(sensor.enabled);
+                            }
+                            else {
+                                toggleButton.setState(sensor.enabled);
+                            }
+                            toggleButton.disabled = false;
+                        };
                         toggleRequest.send();
                     };
 
@@ -52,6 +65,6 @@
                 message.textContent = "No sensors were found in the system."
             }
         };
-        request.send();
+        sensorConfigurationRequest.send();
     }
 }());
