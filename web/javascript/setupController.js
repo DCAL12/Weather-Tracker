@@ -15,8 +15,8 @@
         sensorConfigurationRequest.onload = function() {
 
             var sensors = JSON.parse(this.responseText);
-
             if(sensors.length > 0) {
+
                 sensors.forEach(function (sensor) {
 
                     var dataRow = document.createElement("tr"),
