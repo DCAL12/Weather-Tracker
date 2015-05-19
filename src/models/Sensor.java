@@ -1,7 +1,5 @@
 package models;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Scanner;
@@ -9,12 +7,12 @@ import java.util.Scanner;
 public class Sensor {
     private int id;
     private String label;
-    protected Path port;
+    protected String port;
     private boolean enabled;
     private List<Observation> observations;
     private List<Notification> notifications;
 
-    public Sensor(int id, String label, Path port) {
+    public Sensor(int id, String label, String port) {
         this.id = id;
         this.label = label;
         this.port = port;
@@ -40,16 +38,11 @@ public class Sensor {
 
         Observation observation = null;
 
-        try {
-            Scanner scanner = new Scanner(port);
-            float value = scanner.nextFloat();
-            scanner.close();
+        Scanner scanner = new Scanner(port);
+        float value = scanner.nextFloat();
+        scanner.close();
 
-            observation = new Observation(new Timestamp(System.currentTimeMillis()), value);
-        } catch (IOException e) {
-            System.out.println("models.Sensor.getObservation " + e.getMessage());
-        }
-        return observation;
+        return (new Observation(new Timestamp(System.currentTimeMillis()), value));
     }
 
     public void setObservations(List<Observation> observations) {

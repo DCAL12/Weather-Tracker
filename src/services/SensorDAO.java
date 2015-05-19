@@ -58,7 +58,7 @@ public class SensorDAO extends DAO {
             sensor = new Sensor(
                     queryResult.getInt("id"),
                     queryResult.getString("label"),
-                    Paths.get(queryResult.getString("port"))
+                    queryResult.getString("port")
             );
 
         } catch (SQLException e) {

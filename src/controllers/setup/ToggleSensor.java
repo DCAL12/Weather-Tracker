@@ -3,7 +3,6 @@ package controllers.setup;
 import models.Observation;
 import models.Sensor;
 import services.*;
-import util.BuildJSON;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,8 +14,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-@WebServlet(name = "ConfigureSensors", urlPatterns = "/configure")
-public class ConfigureSensors extends HttpServlet {
+@WebServlet(name = "ConfigureSensors", urlPatterns = "/toggle")
+public class ToggleSensor extends HttpServlet {
 
     private static final long OBSERVATION_SAMPLE_INTERVAL = 1000 * 5; // in milliseconds
 
@@ -70,8 +69,5 @@ public class ConfigureSensors extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        response.setContentType("application/json");
-        response.getWriter().print(BuildJSON.toJSON(availableSensors));
-        response.getWriter().close();
     }
 }

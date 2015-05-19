@@ -4,64 +4,54 @@
 
     function main() {
 
-        var setupTable = document.getElementById("configureSensors");
+        var setupTable = document.getElementById("configureSensors"),
+            message = document.getElementById("message");
+
         var request = new XMLHttpRequest();
         request.open("GET", "/configure");
 
-
+        message.textContent = "loading...";
 
         request.onload = function() {
 
-            var sensors = this.responseText;
-            sensors.forEach(function(sensor) {
+            var sensors = JSON.parse(this.responseText);
 
-                var dataRow = document.createElement("tr"),
-                    statusElement = document.createElement("td"),
-                    toggleButton = document.createElement("button"),
-                    idElement = document.createElement("td"),
-                    labelElement = document.createElement("td");
+            if(sensors.length > 0) {
+                sensors.forEach(function (sensor) {
 
-                toggleButton.onclick = function() {
-                    console.log('toggle' + sensor.id);
-                }
+                    var dataRow = document.createElement("tr"),
+                        statusElement = document.createElement("td"),
+                        toggleButton = document.createElement("button"),
+                        labelElement = document.createElement("td");
 
-                toggleButton.textContent = sensor.enabled;
-                idElement.textContent = sensor.id;
-                labelElement.textContent = sensor.label;
+                    toggleButton.textContent = sensor.enabled ? 'enabled' : 'disabled';
+                    toggleButton.onclick = function () {
+                        var toggleRequest = new XMLHttpRequest();
+                        request.open("POST", "/configure?sensorID=" + sensor.id);
+                        toggleButton.setAttribute("class", "processing");
+                        toggleButton.textContent = "processing...";
 
-                dataRow.appendChild(statusElement);
-                dataRow.appendChild(idElement);
-                dataRow.appendChild(labelElement);
+                        //toggleRequest.onload() = function() {
+                        //    var changedSensor = JSON.parse(this.responseText);
+                        //};
+                        toggleRequest.send();
+                    };
 
-                setupTable.appendChild(dataRow);
-            });
+
+                    labelElement.textContent = sensor.label;
+
+                    statusElement.appendChild(toggleButton);
+                    dataRow.appendChild(statusElement);
+                    dataRow.appendChild(labelElement);
+
+                    setupTable.appendChild(dataRow);
+                    message.textContent = "";
+                });
+            }
+            else {
+                message.textContent = "No sensors were found in the system."
+            }
         };
         request.send();
-    }
-
-    function calculateSum(data) {
-        return data.reduce(function(num1, num2) {
-            return num1 + num2;
-        })
-    }
-
-    function calculateAverage(data) {
-        return calculateSum(data) / data.length
-    }
-
-    function calculateVariance(data) {
-        // variance = average(squared deviations of each of the values from the mean))
-        var deviationsSquared = [],
-            mean = calculateAverage(data);
-
-        data.forEach(function(value) {
-            deviationsSquared.push(Math.pow((value - mean), 2));
-        });
-        return calculateAverage(deviationsSquared);
-    }
-
-    function calculateStandardDeviation(data) {
-        // standard deviation = square_root(variance)
-        return Math.sqrt(calculateVariance(data));
     }
 }());
