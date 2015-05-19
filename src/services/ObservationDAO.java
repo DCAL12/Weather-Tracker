@@ -14,7 +14,7 @@ public class ObservationDAO extends DAO {
         List<Observation> observations = new ArrayList<>();
 
         try {
-            String sql = "SELECT * from Observation WHERE Observatioin.sensor_ID = ?";
+            String sql = "SELECT * from Observation WHERE Observation.sensor_ID = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, sensorID);
 

@@ -1,9 +1,9 @@
 package controllers.notifications;
 
-import com.google.gson.Gson;
 import models.Sensor;
 import services.NotificationDAO;
 import services.SensorDAO;
+import util.BuildJSON;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,8 +28,7 @@ public class GetNotifications extends HttpServlet {
         sensors.forEach(sensor -> sensor.setNotifications(notificationDAO.getNotifications(sensor.getId())));
 
         response.setContentType("application/json");
-        Gson gson = new Gson();
-        response.getWriter().print(gson.toJson(sensors));
+        response.getWriter().print(BuildJSON.toJSON(sensors));
         response.getWriter().close();
 
     }

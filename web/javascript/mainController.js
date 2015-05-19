@@ -1,16 +1,16 @@
 (function() {
-
     window.addEventListener("load", main);
 
     function main() {
-
         var dataTable = document.getElementById("statistics");
         var request = new XMLHttpRequest();
         request.open("GET", "/data");
 
         request.onload = function() {
 
-            var sensors = this.responseText;
+            console.log(this.responseType);
+            console.log(this.responseText);
+            var sensors = JSON.parse(this.responseText);
             sensors.forEach(function(sensor) {
 
                 var dataRow = document.createElement("tr"),

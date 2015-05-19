@@ -3,8 +3,8 @@
 
 <head lang="en">
     <meta charset="UTF-8">
-    <title>{{title}}</title>
-    <meta name="description" content="An web interface for tracking weather data">
+    <title>Weather Tracker</title>
+    <meta name="description" content="A web interface for tracking weather data">
     <!--<link rel="stylesheet" media="screen" href="/stylesheets/style.css">-->
     <!-- Adds HTML5 element support for earlier versions of IE -->
     <!--[if lt IE 9]>
@@ -27,10 +27,22 @@
 </header>
 
 <main role="main" class="main">
-    {{main}}
+<h2>Welcome to Weather Tracker</h2>
+
+<h3>Latest Observation Statistics</h3>
+<table id="statistics">
+    <tr>
+        <th>Label</th>
+        <th>Sum</th>
+        <th>Average</th>
+        <th>Standard Deviation</th>
+    </tr>
+    <!--data rows dynamically added by mainController-->
+</table>
 </main>
 
 <footer>
+    <script src="/javascript/mainController.js"></script>
 </footer>
 
 </body>

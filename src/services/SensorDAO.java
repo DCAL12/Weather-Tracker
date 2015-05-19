@@ -25,7 +25,6 @@ public class SensorDAO extends DAO {
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.getSensors error: " + e.getMessage());
         }
-
         return results;
     }
 
@@ -39,7 +38,10 @@ public class SensorDAO extends DAO {
             statement.setInt(1, sensorID);
 
             ResultSet queryResult = statement.executeQuery();
-            sensor = createSensor(queryResult);
+
+            if (queryResult.next()) {
+                sensor = createSensor(queryResult);
+            }
 
         } catch (SQLException e) {
             System.out.println("services.SensorDAO.getSensor error: " + e.getMessage());
@@ -53,12 +55,10 @@ public class SensorDAO extends DAO {
         Sensor sensor = null;
 
         try {
-            queryResult.next();
             sensor = new Sensor(
                     queryResult.getInt("id"),
                     queryResult.getString("label"),
-                    Paths.get(queryResult.getString("port")),
-                    queryResult.getInt("sampleRate")
+                    Paths.get(queryResult.getString("port"))
             );
 
         } catch (SQLException e) {
