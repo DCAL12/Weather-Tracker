@@ -3,6 +3,7 @@ package services;
 import models.Notification;
 import models.Observation;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -41,6 +42,10 @@ public class Notifier {
                 label, notification.getThreshold().getOperator(),
                 notification.getThreshold().getValue());
 
-        System.out.println(message);
+        try {
+            SmtpMessage.sendEmail(notification.getRecipients(), "Weather Tracker Alert", message);
+        } catch (MessagingException e) {
+            System.out.println("services.Notifier.sendAlert Message Error" + e.getMessage());
+        }
     }
 }
