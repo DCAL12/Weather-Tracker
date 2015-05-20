@@ -1,4 +1,4 @@
-package services;
+package services.dataAccess;
 
 import models.Notification;
 import models.Threshold;
@@ -23,9 +23,7 @@ public class NotificationDAO extends DAO {
     public List<Notification> getNotifications(int sensorID) {
 
         String outerSql =
-                "SELECT * from Notification" +
-                        "JOIN Recipient WHERE Notification.id = Recipient.notification_id " +
-                        "AND Notification.sensor_ID = ?";
+                "SELECT * from Notification WHERE Notification.sensor_ID = ?";
         List<Notification> notifications = new ArrayList<>();
 
         try (Connection connection = getConnection();
@@ -56,13 +54,13 @@ public class NotificationDAO extends DAO {
                     }
 
                 } catch (SQLException e) {
-                    System.out.println("services.NotificationDAO.getNotifications error: " + e.getMessage());
+                    System.out.println("services.dataAccess.NotificationDAO.getNotifications error: " + e.getMessage());
                 }
                 notifications.add(newNotification);
             }
 
         } catch (SQLException e) {
-            System.out.println("services.NotificationDAO.getNotifications error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.getNotifications error: " + e.getMessage());
         }
         return notifications;
     }
@@ -85,7 +83,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.NotificationDAO.addNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.addNotification error: " + e.getMessage());
         }
     }
 
@@ -105,7 +103,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.NotificationDAO.addNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.addNotification error: " + e.getMessage());
         }
     }
 
@@ -126,7 +124,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.NotificationDAO.updateNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.updateNotification error: " + e.getMessage());
         }
     }
 
@@ -141,7 +139,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.NotificationDAO.deleteNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.deleteNotification error: " + e.getMessage());
         }
 
         // Clean up corresponding recipients
@@ -163,7 +161,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.NotificationDAO.deleteRecipient error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.deleteRecipient error: " + e.getMessage());
         }
     }
 
@@ -178,7 +176,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.NotificationDAO.deleteRecipient error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.deleteRecipient error: " + e.getMessage());
         }
     }
 }

@@ -2,7 +2,7 @@ package controllers.notifications;
 
 import models.Notification;
 import models.Threshold;
-import services.NotificationDAO;
+import services.dataAccess.NotificationDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

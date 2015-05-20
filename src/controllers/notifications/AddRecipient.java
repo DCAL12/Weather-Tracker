@@ -1,6 +1,6 @@
 package controllers.notifications;
 
-import services.NotificationDAO;
+import services.dataAccess.NotificationDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

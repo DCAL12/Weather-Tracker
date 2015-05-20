@@ -10,9 +10,9 @@ import java.util.TimerTask;
 public class SensorMock extends Sensor {
 
     public enum Type {
-        TEMPERATURE (16, 38, 3),
-        HUMIDITY (10, 90, 1),
-        LIGHT (0, 100, 8);
+        TEMPERATURE (16, 38, 30),
+        HUMIDITY (10, 90, 20),
+        LIGHT (0, 100, 25);
 
         private final int minValue;
         private final int maxValue;
@@ -37,14 +37,14 @@ public class SensorMock extends Sensor {
         }
     }
 
-    public static final int PERIOD = 60 * 60 * 24; // 60 sec * 60 min * 24 hrs = 1 day
-    private static final int SAMPLE_RATE_IN_SECONDS = 1;
-    private int elapsedTimeInSeconds = 0;
+    private static final int PERIOD_SECONDS = 86400/24/60; //86,400 seconds = 1 day
+    private static final int SAMPLE_RATE_MILLISECONDS = 1000 * 1;
+    private long elapsedSeconds = 0;
     private Type type;
     private float currentObservation;
 
     public SensorMock(Type type) {
-        super(type.ordinal() + 1, type.toString(), null);
+        super(type.ordinal(), type.toString().toLowerCase(), null);
         this.type = type;
 
         runSensor();
@@ -61,6 +61,9 @@ public class SensorMock extends Sensor {
         Timer timer = new Timer();
         TimerTask sensorUpdater = new TimerTask() {
 
+            float periodMin = type.minValue;
+            float periodMax = type.maxValue;
+
             @Override
             public void run() {
 
@@ -70,21 +73,28 @@ public class SensorMock extends Sensor {
                 * y = sensor reading with respect to x
                 * x = time in seconds
                 * r = daily range
-                * p = period = 24 hours
+                * p = period
                 * m = daily minimum reading
                 *
-                * y = 1/2r * sin(2p*pi*x) + 1/2r + m
+                * y = 1/2r * sin(2*pi*x/p) + 1/2r + m
                 * */
 
-                elapsedTimeInSeconds += SAMPLE_RATE_IN_SECONDS;
-                currentObservation = (float) ((type.getRange() / 2)
-                                        * Math.sin(PERIOD * 2 * Math.PI * elapsedTimeInSeconds)
-                                        +  (type.getRange() / 2) + type.getMinValue());
+                if (elapsedSeconds % PERIOD_SECONDS == 0) {
 
-                // Introduce random variation
-                currentObservation += Math.random() * (type.variationPercentage / 100);
+                    periodMin = type.minValue + type.minValue
+                            * (float) (Math.random() * (float) type.variationPercentage/100);
+                    periodMax = type.maxValue - type.maxValue
+                            * (float) (Math.random() * (float) type.variationPercentage/100);
+                    System.out.println("Range: " + periodMin + "-" + periodMax);
+                }
+
+                elapsedSeconds += (float) SAMPLE_RATE_MILLISECONDS / 1000;
+                currentObservation = (float)
+                        (0.5 * (periodMax - periodMin)
+                        * Math.sin(2 * Math.PI * (float) elapsedSeconds / PERIOD_SECONDS)
+                        + 0.5 * (periodMax - periodMin) + periodMin);
             }
         };
-        timer.scheduleAtFixedRate(sensorUpdater, 0, SAMPLE_RATE_IN_SECONDS * 1000);
+        timer.schedule(sensorUpdater, 0, SAMPLE_RATE_MILLISECONDS);
     }
 }

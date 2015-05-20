@@ -1,8 +1,8 @@
 package controllers.notifications;
 
 import models.Sensor;
-import services.NotificationDAO;
-import services.SensorDAO;
+import services.dataAccess.NotificationDAO;
+import services.dataAccess.SensorDAO;
 import util.BuildJSON;
 
 import javax.servlet.ServletException;

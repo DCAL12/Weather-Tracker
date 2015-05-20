@@ -1,4 +1,4 @@
-package services;
+package services.dataAccess;
 
 import models.Observation;
 
@@ -43,14 +43,14 @@ public class ObservationDAO extends DAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("services.ObservationDAO.getObservations error: " + e.getMessage());
+            System.out.println("services.dataAccess.ObservationDAO.getObservations error: " + e.getMessage());
         }
         return observations;
     }
 
     public void addObservation(int sensorID, Observation observation) {
 
-        String sql = "INSERT INTO Measurement (" +
+        String sql = "INSERT INTO Observation (" +
                 "sensor_ID, " +
                 "timestamp, " +
                 "value" +
@@ -65,13 +65,13 @@ public class ObservationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.ObservationDAO.addObservation error: " + e.getMessage());
+            System.out.println("services.dataAccess.ObservationDAO.addObservation error: " + e.getMessage());
         }
     }
 
     public void clearObservations(int sensorID) {
 
-        String sql = "DELETE FROM Measurement WHERE sensor_ID = ?";
+        String sql = "DELETE FROM Observation WHERE sensor_ID = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ){
@@ -80,7 +80,7 @@ public class ObservationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.ObservationDAO.clearObservations error: " + e.getMessage());
+            System.out.println("services.dataAccess.ObservationDAO.clearObservations error: " + e.getMessage());
         }
     }
 }

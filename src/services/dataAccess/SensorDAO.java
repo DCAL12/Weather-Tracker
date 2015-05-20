@@ -1,5 +1,6 @@
-package services;
+package services.dataAccess;
 
+import mock.SensorMock;
 import models.Sensor;
 
 import java.sql.*;
@@ -8,6 +9,7 @@ import java.util.List;
 
 public class SensorDAO extends DAO {
 
+    private static boolean USE_MOCK_SENSORS = true;
     private static SensorDAO instance;
     private SensorDAO() {
         super();
@@ -20,7 +22,6 @@ public class SensorDAO extends DAO {
     }
 
     public List<Sensor> getSensors() {
-
         String sql = "SELECT * from Sensor";
         List<Sensor> results = new ArrayList<>();
 
@@ -34,7 +35,7 @@ public class SensorDAO extends DAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("services.SensorDAO.getSensors error: " + e.getMessage());
+            System.out.println("services.dataAccess.SensorDAO.getSensors error: " + e.getMessage());
         }
         return results;
     }
@@ -55,7 +56,7 @@ public class SensorDAO extends DAO {
             }
 
         } catch (SQLException e) {
-            System.out.println("services.SensorDAO.getSensor error: " + e.getMessage());
+            System.out.println("services.dataAccess.SensorDAO.getSensor error: " + e.getMessage());
         }
         return sensor;
     }
@@ -63,17 +64,21 @@ public class SensorDAO extends DAO {
     private Sensor createSensor(ResultSet queryResult) {
 
         Sensor sensor = null;
+        int id = 0;
+        String label = null;
+        String port = null;
 
         try {
-            sensor = new Sensor(
-                    queryResult.getInt("id"),
-                    queryResult.getString("label"),
-                    queryResult.getString("port")
-            );
-
+            id = queryResult.getInt("id");
+            label = queryResult.getString("label");
+            port = queryResult.getString("port");
         } catch (SQLException e) {
-            System.out.println("services.SensorDAO.createSensor error: " + e.getMessage());
+            System.out.println("services.dataAccess.SensorDAO.createSensor error: " + e.getMessage());
         }
-        return sensor;
+
+        if(USE_MOCK_SENSORS) {
+            return new SensorMock(SensorMock.Type.valueOf(label.toUpperCase()));
+        }
+        return new Sensor(id, label, port);
     }
 }

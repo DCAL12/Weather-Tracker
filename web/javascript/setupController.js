@@ -31,21 +31,26 @@
                     toggleButton.setState(sensor.enabled);
 
                     toggleButton.onclick = function () {
+                        console.log('toggling sensor: ' + sensor.id);
                         var toggleRequest = new XMLHttpRequest();
-                        toggleRequest.open("POST", "/configure?sensorID=" + sensor.id);
                         toggleButton.setAttribute("class", "processing");
                         toggleButton.disabled = true;
                         toggleButton.textContent = "processing...";
+                        toggleRequest.open("POST", "/configure?sensorID=" + sensor.id);
 
                         toggleRequest.onreadystatechange = function() {
-                            if (toggleRequest.readyState===4 && toggleRequest.status===200) {
+                            if (toggleRequest.readyState === 4 && toggleRequest.status === 200) {
+                                console.log('Ready State: ' + toggleRequest.readyState);
                                 sensor.enabled = !sensor.enabled;
                                 toggleButton.setState(sensor.enabled);
+                                toggleButton.disabled = false;
                             }
-                            else {
+                            else if (toggleRequest.status !== 200){
+                                console.log('Status: ' + toggleRequest.status);
                                 toggleButton.setState(sensor.enabled);
+                                toggleButton.disabled = false;
                             }
-                            toggleButton.disabled = false;
+
                         };
                         toggleRequest.send();
                     };

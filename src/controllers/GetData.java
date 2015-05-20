@@ -2,8 +2,8 @@ package controllers;
 
 import models.Observation;
 import models.Sensor;
-import services.ObservationDAO;
-import services.SensorDAO;
+import services.dataAccess.ObservationDAO;
+import services.dataAccess.SensorDAO;
 import util.BuildJSON;
 
 import javax.servlet.ServletException;
@@ -33,6 +33,7 @@ public class GetData extends HttpServlet {
             }
         });
         response.setContentType("application/json");
+        System.out.println(BuildJSON.toJSON(sensors));
         response.getWriter().print(BuildJSON.toJSON(sensors));
         response.getWriter().close();
     }

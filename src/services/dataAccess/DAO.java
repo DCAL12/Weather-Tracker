@@ -1,4 +1,4 @@
-package services;
+package services.dataAccess;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,23 +13,21 @@ abstract class DAO {
         private static final String DRIVER = "com.mysql.jdbc.Driver";
     }
 
-    private Connection connection;
+    protected Connection getConnection() {
 
-    protected DAO() {
+        Connection connection = null;
+
         try {
             Class.forName(DatabaseConfiguration.DRIVER);
             connection = DriverManager.getConnection(DatabaseConfiguration.URI,
                     DatabaseConfiguration.USERNAME, DatabaseConfiguration.PASSWORD);
         } catch (SQLException e) {
-            System.out.println("services.SensorDAO SQL error: " + e.getMessage());
+            System.out.println("services.dataAccess.DAO.getConnection() SQL error: " + e.getMessage());
             connection = null;
         } catch (ClassNotFoundException c) {
-            System.out.println("services.SensorDAO Driver error: " + c.getMessage());
+            System.out.println("services.dataAccess.DAO.getConnection() Driver error: " + c.getMessage());
             connection = null;
         }
-    }
-
-    protected Connection getConnection() {
         return connection;
     }
 }
