@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet(name = "GetData", urlPatterns = "/data")
-public class GetData extends HttpServlet {
+public class GetObservationData extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }

@@ -3,7 +3,6 @@ package controllers.setup;
 import models.Observation;
 import models.Sensor;
 import services.Notifier;
-import services.TaskDispatcher;
 import services.dataAccess.NotificationDAO;
 import services.dataAccess.ObservationDAO;
 import services.dataAccess.SensorDAO;
@@ -18,7 +17,7 @@ import java.io.IOException;
 import java.util.*;
 
 @WebServlet(name = "ConfigureSensors", urlPatterns = "/configure")
-public class Configuration extends HttpServlet {
+public class ConfigureSensors extends HttpServlet {
 
     private static final long OBSERVATION_SAMPLE_INTERVAL = 1000 * 3; // in milliseconds
 
@@ -39,7 +38,6 @@ public class Configuration extends HttpServlet {
 
         int sensorID = Integer.parseInt(request.getParameter("sensorID"));
         Sensor sensor = availableSensors.get(sensorID);
-        TimerTask task;
 
         System.out.println("Toggle Sensor: " + sensor.getLabel());
 
@@ -50,23 +48,23 @@ public class Configuration extends HttpServlet {
         }
         else {
             // start sensor recording
-            task = new TimerTask(){
+            TimerTask task = new TimerTask(){
                 @Override
                 public void run() {
                     // Record observations at OBSERVATION_SAMPLE_INTERVAL
                     Observation observation = sensor.getObservation();
-//                observationDAO.addObservation(sensorID, observation);
+                    observationDAO.addObservation(sensorID, observation);
                     System.out.println(observation.getValue());
 
                     // Trigger new, valid notification alerts
-//                Notifier.processNotifications(
-//                        notificationDAO.getNotifications(sensorID),
-//                        notification -> notification.getThreshold().isExceeded(observation.getValue()),
-//                        validNotification -> validNotification
-//                                .getRecipients()
-//                                .forEach(recipient ->
-//                                        Notifier.sendAlert(validNotification, sensor.getLabel(), observation))
-//                );
+                Notifier.processNotifications(
+                        notificationDAO.getNotifications(sensorID),
+                        notification -> notification.getThreshold().isExceeded(observation.getValue()),
+                        validNotification -> validNotification
+                                .getRecipients()
+                                .forEach(recipient ->
+                                        Notifier.sendAlert(validNotification, sensor.getLabel(), observation))
+                );
                 }
             };
             timer.schedule(task, 0, OBSERVATION_SAMPLE_INTERVAL);
