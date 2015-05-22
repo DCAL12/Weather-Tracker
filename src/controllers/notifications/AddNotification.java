@@ -20,16 +20,22 @@ public class AddNotification extends HttpServlet {
 
         int sensorID = Integer.parseInt(request.getParameter("sensorID"));
         String operator = request.getParameter("operator");
-        float thresholdValue = 10.2f;
+        float thresholdValue = Float.parseFloat(request.getParameter("thresholdValue"));
         String email = request.getParameter("email");
 
         Notification requestedNotification =
-                new Notification(new Threshold(Threshold.Operator.valueOf(operator), thresholdValue));
-        Optional<Notification> existingNotification = null;
+                new Notification(sensorID,
+                        new Threshold(Threshold.Operator.valueOf(operator), thresholdValue));
+        Optional<Notification> existingNotification;
 
         existingNotification = notificationDAO.getNotifications(sensorID)
                 .stream()
-                .filter(requestedNotification::equals)
+                .filter(notification ->
+                        notification.getSensorID()
+                            == requestedNotification.getSensorID()
+                        && notification.getThreshold()
+                            .equals(requestedNotification.getThreshold())
+                )
                 .findFirst();
 
         if (existingNotification.isPresent()) {

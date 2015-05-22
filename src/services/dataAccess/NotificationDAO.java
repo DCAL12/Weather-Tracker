@@ -36,7 +36,7 @@ public class NotificationDAO extends DAO {
             while (outerQueryResults.next()) {
 
                 int notificationID = outerQueryResults.getInt("id");
-                Notification newNotification = new Notification(notificationID,
+                Notification newNotification = new Notification(notificationID, sensorID,
                         new Threshold(Threshold.Operator.values()[outerQueryResults.getInt("operator")],
                                 outerQueryResults.getFloat("threshold")));
 
