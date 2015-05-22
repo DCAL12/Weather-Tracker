@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SensorDAO extends DAO {
 
-    private static boolean USE_MOCK_SENSORS = true;
+    public static final boolean USE_MOCK_SENSORS = true;
     private static SensorDAO instance;
     private SensorDAO() {
         super();
@@ -63,7 +63,6 @@ public class SensorDAO extends DAO {
 
     private Sensor createSensor(ResultSet queryResult) {
 
-        Sensor sensor = null;
         int id = 0;
         String label = null;
         String port = null;
@@ -76,7 +75,7 @@ public class SensorDAO extends DAO {
             System.out.println("services.dataAccess.SensorDAO.createSensor error: " + e.getMessage());
         }
 
-        if(USE_MOCK_SENSORS) {
+        if(USE_MOCK_SENSORS && label != null) {
             return new SensorMock(SensorMock.Type.valueOf(label.toUpperCase()));
         }
         return new Sensor(id, label, port);

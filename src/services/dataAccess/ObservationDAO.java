@@ -63,7 +63,6 @@ public class ObservationDAO extends DAO {
             statement.setFloat(3, observation.getValue());
 
             statement.executeUpdate();
-
         } catch (SQLException e) {
             System.out.println("services.dataAccess.ObservationDAO.addObservation error: " + e.getMessage());
         }

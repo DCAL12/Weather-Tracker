@@ -1,5 +1,6 @@
 <h2>Manage Notifications</h2>
 
+<h3>Active Notifications</h3>
 <table id="notifications">
     <tr>
         <th>Sensor</th>
@@ -10,6 +11,36 @@
 </table>
 
 <p id="message"></p>
+
+<h3>Add Notification</h3>
+<form action="/notifications/add" method="post">
+
+    <label for="selectSensor" required>Sensor:</label>
+    <select name="sensorID" id="selectSensor">
+        <option value="0">temperature</option>
+        <option value="1">humidity</option>
+        <option value="2">light</option>
+    </select>
+
+    <label for="operator">Operator:</label>
+    <select name="operator" id="operator" required>
+        <option value="EQUALS">=</option>
+        <option value="NOT_EQUAL">!=</option>
+        <option value="GREATER_THAN" selected>&GT;</option>
+        <option value="LESS_THAN">&LT;</option>
+        <option value="GREATER_THAN_OR_EQUAL">&ge;</option>
+        <option value="LESS_THAN_OR_EQUAL">&le;</option>
+    </select>
+
+    <label for="thresholdValue">Threshold:</label>
+    <input id="thresholdValue" type="text" required>
+
+    <label for="email">Email:</label>
+    <input id="email" type="text" name="email" required>
+
+    <input type="submit">
+
+</form>
 
 <footer>
     <script src="../javascript/notificationController.js"></script>

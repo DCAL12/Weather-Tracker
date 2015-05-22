@@ -30,38 +30,46 @@
 
                     var sensorRow = document.createElement("tr"),
                         sensorElement = document.createElement("td"),
-                        notificationElement = document.createElement("td"),
-                        notificationTable = document.createElement("table");
+                        triggerColumn = document.createElement("td"),
+                        triggerTable = document.createElement("table"),
+                        recipientColumn = document.createElement("td"),
+                        recipientTable = document.createElement("table");
 
                     sensorElement.textContent = sensor.label;
-                    notificationElement.appendChild(notificationTable);
 
                     sensor.notifications.forEach(function (notification) {
-                        var notificationRow = document.createElement("tr"),
+                        var triggerRow = document.createElement("tr"),
                             triggerElement = document.createElement("td"),
+                            recipientRow = document.createElement("tr"),
                             recipientElement = document.createElement("td"),
-                            recipientsList = document.createElement("ul");
+                            recipientList = document.createElement("ul");
 
                         triggerElement.textContent =
-                            notification.threshold.operator +
-                            notification.threshold.value;
+                            notification.threshold.operatorSymbol
+                            + " "
+                            + notification.threshold.value;
 
                         notification.recipients.forEach(function (recipient) {
                             var recipientItem = document.createElement("li");
                             recipientItem.textContent = recipient;
-                            recipientsList.appendChild(recipientItem);
+                            recipientList.appendChild(recipientItem);
                         });
-                        recipientElement.appendChild(recipientsList);
+                        recipientElement.appendChild(recipientList);
+                        recipientRow.appendChild(recipientElement);
+                        recipientTable.appendChild(recipientRow);
+                        recipientColumn.appendChild(recipientTable);
 
-                        notificationRow.appendChild(triggerElement);
-                        notificationRow.appendChild(recipientElement);
-                        notificationTable.appendChild(notificationRow);
+                        triggerRow.appendChild(triggerElement);
+                        triggerTable.appendChild(triggerRow);
+                        triggerColumn.appendChild(triggerTable);
                     });
 
                     sensorRow.appendChild(sensorElement);
-                    sensorRow.appendChild(notificationElement);
+                    sensorRow.appendChild(triggerColumn);
+                    sensorRow.appendChild(recipientColumn);
                     notificationsTable.appendChild(sensorRow);
                 });
+                message.textContent = "";
             }
             else {
                 message.textContent = "No sensors were found in the system."

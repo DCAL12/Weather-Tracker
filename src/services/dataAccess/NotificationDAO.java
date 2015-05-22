@@ -31,14 +31,14 @@ public class NotificationDAO extends DAO {
         ){
             outerStatement.setInt(1, sensorID);
 
-            ResultSet queryResults = outerStatement.executeQuery();
+            ResultSet outerQueryResults = outerStatement.executeQuery();
 
-            while (queryResults.next()) {
+            while (outerQueryResults.next()) {
 
-                int notificationID = queryResults.getInt("id");
+                int notificationID = outerQueryResults.getInt("id");
                 Notification newNotification = new Notification(notificationID,
-                        new Threshold(Threshold.Operator.values()[queryResults.getInt("operator")],
-                                queryResults.getFloat("threshold")));
+                        new Threshold(Threshold.Operator.values()[outerQueryResults.getInt("operator")],
+                                outerQueryResults.getFloat("threshold")));
 
 
                 // Populate recipients for each notification
@@ -47,10 +47,10 @@ public class NotificationDAO extends DAO {
 
                     innerStatement.setInt(1, notificationID);
 
-                    queryResults = innerStatement.executeQuery();
+                    ResultSet innerQueryResults = innerStatement.executeQuery();
 
-                    while (queryResults.next()) {
-                        newNotification.addRecipient(queryResults.getString("email"));
+                    while (innerQueryResults.next()) {
+                        newNotification.addRecipient(innerQueryResults.getString("email"));
                     }
 
                 } catch (SQLException e) {
@@ -65,7 +65,7 @@ public class NotificationDAO extends DAO {
         return notifications;
     }
 
-    public void addNotification(int sensorID, Notification notification) {
+    public void addNotification(int sensorID, Notification notification, String email) {
 
         String sql =
                 "INSERT INTO Notification (" +
@@ -74,7 +74,7 @@ public class NotificationDAO extends DAO {
                         "threshold" +
                         ") VALUES (?,?,?)";
         try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
+             PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)
         ){
             statement.setInt(1, sensorID);
             statement.setInt(2, notification.getThreshold().getOperator().ordinal());
@@ -82,6 +82,11 @@ public class NotificationDAO extends DAO {
 
             statement.executeUpdate();
 
+            // Add recipient
+            ResultSet result = statement.getGeneratedKeys();
+            if (result.next()) {
+                addRecipient(result.getInt(1), email);
+            }
         } catch (SQLException e) {
             System.out.println("services.dataAccess.NotificationDAO.addNotification error: " + e.getMessage());
         }
@@ -103,7 +108,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.addNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.NotificationDAO.addRecipient error: " + e.getMessage());
         }
     }
 

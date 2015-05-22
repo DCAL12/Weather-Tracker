@@ -85,7 +85,6 @@ public class SensorMock extends Sensor {
                             * (float) (Math.random() * (float) type.variationPercentage/100);
                     periodMax = type.maxValue - type.maxValue
                             * (float) (Math.random() * (float) type.variationPercentage/100);
-                    System.out.println("Range: " + periodMin + "-" + periodMax);
                 }
 
                 elapsedSeconds += (float) SAMPLE_RATE_MILLISECONDS / 1000;

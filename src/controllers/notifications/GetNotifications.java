@@ -28,6 +28,7 @@ public class GetNotifications extends HttpServlet {
         sensors.forEach(sensor -> sensor.setNotifications(notificationDAO.getNotifications(sensor.getId())));
 
         response.setContentType("application/json");
+        System.out.println(BuildJSON.toJSON(sensors));
         response.getWriter().print(BuildJSON.toJSON(sensors));
         response.getWriter().close();
 

@@ -36,8 +36,6 @@ public class Sensor {
 
     public Observation getObservation() {
 
-        Observation observation = null;
-
         Scanner scanner = new Scanner(port);
         float value = scanner.nextFloat();
         scanner.close();

@@ -1,8 +1,9 @@
 package models;
 
 public class Threshold {
-    Operator operator;
-    float value;
+    private Operator operator;
+    private String operatorSymbol;
+    private float value;
 
     public enum Operator {
         EQUALS("="),
@@ -17,15 +18,11 @@ public class Threshold {
         Operator(String symbol) {
             this.symbol = symbol;
         }
-
-        @Override
-        public String toString() {
-            return symbol;
-        }
     }
 
     public Threshold(Operator operator, float value) {
         this.operator = operator;
+        operatorSymbol = operator.symbol;
         this.value = value;
     }
 
@@ -53,6 +50,11 @@ public class Threshold {
                 return  observation <= value;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return operatorSymbol + " " + value;
     }
 }
 
