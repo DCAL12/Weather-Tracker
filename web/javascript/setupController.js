@@ -31,10 +31,13 @@
                     toggleButton.setState(sensor.enabled);
 
                     toggleButton.onclick = function () {
+
                         var toggleRequest = new XMLHttpRequest();
+                        
                         toggleButton.setAttribute("class", "processing");
                         toggleButton.disabled = true;
                         toggleButton.textContent = "processing...";
+
                         toggleRequest.open("POST", "/configure?sensorID=" + sensor.id);
 
                         toggleRequest.onreadystatechange = function() {
@@ -44,7 +47,6 @@
                                 toggleButton.disabled = false;
                             }
                             else if (toggleRequest.status !== 200){
-                                console.log('Status: ' + toggleRequest.status);
                                 toggleButton.setState(sensor.enabled);
                                 toggleButton.disabled = false;
                             }
