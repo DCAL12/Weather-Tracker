@@ -1,6 +1,6 @@
 (function() {
 
-    window.addEventListener("load", main);
+    window.addEventListener('load', main);
 
     function main() {
 
@@ -8,7 +8,7 @@
             message = document.getElementById("message");
 
         var request = new XMLHttpRequest();
-        request.open("GET", "/notifications/getNotifications");
+        request.open('GET', '/notifications/getNotifications');
 
         message.textContent = "loading...";
 
@@ -57,14 +57,14 @@
                             + " "
                             + notification.threshold.value + " ";
                         triggerElement.insertAdjacentHTML('beforeend',
-                            '<span onclick="notificationsTable.deleteNotification(sensor.id, notification.id)">X</span>');
+                            '<span onclick="deleteNotification(sensor.id, notification.id)">X</span>');
 
                         // create a list for each of the notification's recipients
                         notification.recipients.forEach(function (recipient) {
 
                             var recipientItem = document.createElement("li"),
                                 deleteOption =
-                                    '<span onclick="notificationsTable.deleteRecipient(notification.id, recipient)">X</span>';
+                                    '<span onclick="deleteRecipient(notification.id, recipient)">X</span>';
 
                             recipientItem.textContent = recipient;
                             recipientItem.id = 'notification:' + notification.id + '-' + recipient;
@@ -94,53 +94,54 @@
         };
         request.send();
     }
+
+
+        function deleteRecipient(notificationID, email) {
+
+            var deleteRecipientRequest = new XMLHttpRequest(),
+                data = new FormData(),
+                recipientList = document.getElementById('notification:' + notificationID + '.recipientsList'),
+                recipientElement = document.getElementById('notification:' + notificationID + '-' + email);
+
+            data.append('notificationID', notificationID);
+            data.append('email', email);
+
+            deleteRecipientRequest.open('POST', '/notifications/recipients/delete');
+            deleteRecipientRequest.onreadystatechange = function () {
+                if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status !== 200) {
+                    alert('Something went wrong...');
+                }
+                else if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status === 200) {
+                    recipientList.removeChild(recipientElement);
+                    alert(email + ' has been removed');
+                }
+            };
+            deleteRecipientRequest.send(data);
+        }
+
+        function deleteNotification(sensorID, notificationID) {
+
+            var deleteNotificationRequest = new XMLHttpRequest(),
+                data = new FormData(),
+                triggerTable = document.getElementById(sensorID + '.triggers'),
+                recipientTable = document.getElementById(sensorID + '.recipients'),
+                triggerRow = document.getElementById('notification:' + nofificationID + '.trigger'),
+                recipientRow = document.getElementById('notification:' + nofificationID + '.recipients');
+
+            data.append('notificationID', notificationID);
+
+            deleteNotificationRequest.open('POST', '/notifications/delete');
+            deleteNotificationRequest.onreadystatechange = function () {
+                if (deleteNotificationRequest.readyState === 4 && deleteNotificationRequest.status !== 200) {
+                    alert('Something went wrong...');
+                }
+                else if (deleteNotificationRequest.readyState === 4 && deleteNotificationRequest.status === 200) {
+                    triggerTable.removeChild(triggerRow);
+                    recipientTable.removeChild(recipientRow);
+                    alert('notification has been removed');
+                }
+            };
+            deleteNotificationRequest.send(data);
+        }
 }());
 
-notificationsTable = {
-    deleteRecipient: function(notificationID, email) {
-
-        var deleteRecipientRequest = new XMLHttpRequest(),
-            data = new FormData(),
-            recipientList = document.getElementById('notification:' + notificationID + '.recipientsList'),
-            recipientElement = document.getElementById('notification:' + notificationID + '-' + email);
-
-        data.append('notificationID', notificationID);
-        data.append('email', email);
-
-        deleteRecipientRequest.open("POST", "/notifications/recipients/delete");
-        deleteRecipientRequest.onreadystatechange = function () {
-            if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status !== 200) {
-                alert('Something went wrong...');
-            }
-            else if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status === 200) {
-                recipientList.removeChild(recipientElement);
-                alert(email + ' has been removed');
-            }
-        };
-        deleteRecipientRequest.send(data);
-    },
-    deleteNotification: function(sensorID, nofificationID) {
-
-        var deleteNotificationRequest = new XMLHttpRequest(),
-            data = new FormData(),
-            triggerTable = document.getElementById(sensorID + '.triggers'),
-            recipientTable = document.getElementById(sensorID + '.recipients'),
-            triggerRow = document.getElementById('notification:' + nofificationID + '.trigger'),
-            recipientRow = document.getElementById('notification:' + nofificationID + '.recipients');
-
-        data.append('notificationID', notificationID);
-
-        deleteNotificationRequest.open("POST", "/notifications/delete");
-        deleteNotificationRequest.onreadystatechange = function () {
-            if (deleteNotificationRequest.readyState === 4 && deleteNotificationRequest.status !== 200) {
-                alert('Something went wrong...');
-            }
-            else if (deleteNotificationRequest.readyState === 4 && deleteNotificationRequest.status === 200) {
-                triggerTable.removeChild(triggerRow);
-                recipientTable.removeChild(recipientRow);
-                alert('notification has been removed');
-            }
-        };
-        deleteNotificationRequest.send(data);
-    }
-};

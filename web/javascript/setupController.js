@@ -1,6 +1,6 @@
 (function() {
 
-    window.addEventListener("load", main);
+    window.addEventListener('load', main);
 
     function main() {
 
@@ -8,7 +8,7 @@
             message = document.getElementById("message");
 
         var sensorConfigurationRequest = new XMLHttpRequest();
-        sensorConfigurationRequest.open("GET", "/configure");
+        sensorConfigurationRequest.open('GET', '/configure');
 
         message.textContent = "loading...";
 
@@ -26,7 +26,7 @@
 
                     toggleButton.setState = function(isEnabled) {
                         toggleButton.textContent = isEnabled ? 'enabled' : 'disabled';
-                        toggleButton.setAttribute("class", toggleButton.textContent);
+                        toggleButton.setAttribute('class', toggleButton.textContent);
                     };
                     toggleButton.setState(sensor.enabled);
 
@@ -34,11 +34,11 @@
 
                         var toggleRequest = new XMLHttpRequest();
                         
-                        toggleButton.setAttribute("class", "processing");
+                        toggleButton.setAttribute('class', "processing");
                         toggleButton.disabled = true;
                         toggleButton.textContent = "processing...";
 
-                        toggleRequest.open("POST", "/configure?sensorID=" + sensor.id);
+                        toggleRequest.open('POST', '/configure?sensorID=' + sensor.id);
 
                         toggleRequest.onreadystatechange = function() {
                             if (toggleRequest.readyState === 4 && toggleRequest.status === 200) {

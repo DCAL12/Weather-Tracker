@@ -1,6 +1,6 @@
 (function() {
 
-    window.addEventListener("load", main);
+    window.addEventListener('load', main);
 
     function main() {
 
@@ -15,14 +15,14 @@
             event.preventDefault();
 
             submitButton.disabled = true;
-            submitButton.setAttribute("value", "processing");
+            submitButton.setAttribute('value', "processing");
 
-            submitRequest.open("POST", "/notifications/add");
+            submitRequest.open('POST', '/notifications/add');
             submitRequest.onreadystatechange = function () {
                 if (submitRequest.readyState === 4 && submitRequest.status !== 200) {
                     alert('Something went wrong...');
                     submitButton.disabled = false;
-                    submitButton.setAttribute("value", "submit");
+                    submitButton.setAttribute('value', "submit");
                 }
                 else if (submitRequest.readyState === 4 && submitRequest.status === 200) {
                     location.reload(true);

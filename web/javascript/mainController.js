@@ -1,12 +1,12 @@
 (function() {
-    window.addEventListener("load", main);
+    window.addEventListener('load', main);
 
     function main() {
         var dataTable = document.getElementById("statistics"),
             message = document.getElementById("message");
 
         var request = new XMLHttpRequest();
-        request.open("GET", "/data");
+        request.open('GET', '/data');
 
         message.textContent = "loading...";
 
@@ -16,7 +16,7 @@
 
             sensors.forEach(function(sensor) {
 
-                var dataPrecision = -1; // negative number indicates decimal places
+                var dataPrecision = -1; // negative number indicates decimal places to right
 
                 var dataRow = document.createElement("tr"),
                     labelElement = document.createElement("td");
@@ -28,7 +28,7 @@
                         lastObservationElement = document.createElement("td");
 
                     var data = [],
-                        statistics = {};
+                        statistics;
 
                     sensor.observations.forEach(function(observation) {
                         data.push(observation.value);
