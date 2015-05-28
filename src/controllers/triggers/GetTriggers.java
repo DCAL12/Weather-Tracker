@@ -1,7 +1,7 @@
-package controllers.notifications;
+package controllers.triggers;
 
 import models.Sensor;
-import services.dataAccess.NotificationDAO;
+import services.dataAccess.TriggerDAO;
 import services.dataAccess.SensorDAO;
 import util.BuildJSON;
 
@@ -13,22 +13,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "GetNotifications", urlPatterns = "/notifications/getNotifications")
-public class GetNotifications extends HttpServlet {
+@WebServlet(name = "GetTriggers", urlPatterns = "/triggers/getTriggers")
+public class GetTriggers extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        NotificationDAO notificationDAO = NotificationDAO.getInstance();
+        TriggerDAO triggerDAO = TriggerDAO.getInstance();
         SensorDAO sensorDAO = SensorDAO.getInstance();
 
         List<Sensor> sensors = sensorDAO.getSensors();
-        sensors.forEach(sensor -> sensor.setNotifications(notificationDAO.getNotifications(sensor.getId())));
+        sensors.forEach(sensor -> sensor.setTriggers(triggerDAO.getTriggers(sensor.getId())));
 
         response.setContentType("application/json");
-        System.out.println(BuildJSON.toJSON(sensors));
         response.getWriter().print(BuildJSON.toJSON(sensors));
         response.getWriter().close();
 

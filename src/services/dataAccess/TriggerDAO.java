@@ -1,30 +1,30 @@
 package services.dataAccess;
 
-import models.Notification;
+import models.Trigger;
 import models.Threshold;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationDAO extends DAO {
+public class TriggerDAO extends DAO {
 
-    private static NotificationDAO instance;
-    private NotificationDAO() {
+    private static TriggerDAO instance;
+    private TriggerDAO() {
         super();
     }
-    public static NotificationDAO getInstance() {
+    public static TriggerDAO getInstance() {
         if (instance == null) {
-            instance = new NotificationDAO();
+            instance = new TriggerDAO();
         }
         return instance;
     }
 
-    public List<Notification> getNotifications(int sensorID) {
+    public List<Trigger> getTriggers(int sensorID) {
 
         String outerSql =
-                "SELECT * from Notification WHERE Notification.sensor_ID = ?";
-        List<Notification> notifications = new ArrayList<>();
+                "SELECT * from `Trigger` WHERE sensor_id = ?";
+        List<Trigger> triggers = new ArrayList<>();
 
         try (Connection connection = getConnection();
              PreparedStatement outerStatement = connection.prepareStatement(outerSql)
@@ -36,13 +36,13 @@ public class NotificationDAO extends DAO {
             while (outerQueryResults.next()) {
 
                 int notificationID = outerQueryResults.getInt("id");
-                Notification newNotification = new Notification(notificationID, sensorID,
+                Trigger newTrigger = new Trigger(notificationID, sensorID,
                         new Threshold(Threshold.Operator.values()[outerQueryResults.getInt("operator")],
                                 outerQueryResults.getFloat("threshold")));
 
 
                 // Populate recipients for each notification
-                String innerSql = "SELECT email from Recipient WHERE notification_ID = ?";
+                String innerSql = "SELECT email from Recipient WHERE trigger_id = ?";
                 try (PreparedStatement innerStatement = connection.prepareStatement(innerSql)){
 
                     innerStatement.setInt(1, notificationID);
@@ -50,26 +50,26 @@ public class NotificationDAO extends DAO {
                     ResultSet innerQueryResults = innerStatement.executeQuery();
 
                     while (innerQueryResults.next()) {
-                        newNotification.addRecipient(innerQueryResults.getString("email"));
+                        newTrigger.addRecipient(innerQueryResults.getString("email"));
                     }
 
                 } catch (SQLException e) {
-                    System.out.println("services.dataAccess.NotificationDAO.getNotifications error: " + e.getMessage());
+                    System.out.println("services.dataAccess.TriggerDAO.getTriggers error: " + e.getMessage());
                 }
-                notifications.add(newNotification);
+                triggers.add(newTrigger);
             }
 
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.getNotifications error: " + e.getMessage());
+            System.out.println("services.dataAccess.TriggerDAO.getTriggers error: " + e.getMessage());
         }
-        return notifications;
+        return triggers;
     }
 
-    public void addNotification(int sensorID, Notification notification, String email) {
+    public void addTrigger(int sensorID, Trigger trigger, String email) {
 
         String sql =
-                "INSERT INTO Notification (" +
-                        "sensor_ID, " +
+                "INSERT INTO `Trigger` (" +
+                        "sensor_id, " +
                         "operator," +
                         "threshold" +
                         ") VALUES (?,?,?)";
@@ -77,8 +77,8 @@ public class NotificationDAO extends DAO {
              PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)
         ){
             statement.setInt(1, sensorID);
-            statement.setInt(2, notification.getThreshold().getOperator().ordinal());
-            statement.setFloat(3, notification.getThreshold().getValue());
+            statement.setInt(2, trigger.getThreshold().getOperator().ordinal());
+            statement.setFloat(3, trigger.getThreshold().getValue());
 
             statement.executeUpdate();
 
@@ -88,7 +88,7 @@ public class NotificationDAO extends DAO {
                 addRecipient(result.getInt(1), email);
             }
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.addNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.TriggerDAO.addTrigger error: " + e.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class NotificationDAO extends DAO {
 
         String sql =
                 "INSERT INTO Recipient (" +
-                        "notification_ID, " +
+                        "trigger_id, " +
                         "email" +
                         ") VALUES (?,?)";
         try (Connection connection = getConnection();
@@ -108,71 +108,71 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.addRecipient error: " + e.getMessage());
+            System.out.println("services.dataAccess.TriggerDAO.addRecipient error: " + e.getMessage());
         }
     }
 
-    public void updateNotification(int notificationID, Notification notification) {
+    public void updateTrigger(int notificationID, Trigger trigger) {
 
         String sql =
-                "UPDATE Notification SET " +
+                "UPDATE `Trigger` SET " +
                         "operator = ?, " +
                         "threshold = ?" +
                         "WHERE id = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ){
-            statement.setString(1, notification.getThreshold().getOperator().toString());
-            statement.setFloat(2, notification.getThreshold().getValue());
+            statement.setInt(1, trigger.getThreshold().getOperator().ordinal());
+            statement.setFloat(2, trigger.getThreshold().getValue());
             statement.setInt(3, notificationID);
 
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.updateNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.TriggerDAO.updateTrigger error: " + e.getMessage());
         }
     }
 
-    public void deleteNotification(int notificationID) {
+    public void deleteTrigger(int triggerID) {
 
-        String sql = "DELETE FROM Notification WHERE Notification.ID = ?";
+        String sql = "DELETE FROM `Trigger` WHERE id = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ){
-            statement.setInt(1, notificationID);
+            statement.setInt(1, triggerID);
 
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.deleteNotification error: " + e.getMessage());
+            System.out.println("services.dataAccess.TriggerDAO.deleteTrigger error: " + e.getMessage());
         }
 
         // Clean up corresponding recipients
-        deleteRecipients(notificationID);
+        deleteRecipients(triggerID);
     }
 
-    public void deleteRecipient(int notificationID, String email) {
+    public void deleteRecipient(int triggerID, String email) {
 
         String sql =
                 "DELETE FROM Recipient " +
-                        "WHERE notification_ID = ? " +
+                        "WHERE trigger_id = ? " +
                         "AND email = ?";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ){
-            statement.setInt(1, notificationID);
+            statement.setInt(1, triggerID);
             statement.setString(2, email);
 
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.deleteRecipient error: " + e.getMessage());
+            System.out.println("services.dataAccess.TriggerDAO.deleteRecipient error: " + e.getMessage());
         }
     }
 
     private void deleteRecipients(int notificationID) {
 
-        String sql = "DELETE FROM Recipient WHERE notification_ID = ? ";
+        String sql = "DELETE FROM Recipient WHERE trigger_id = ? ";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ){
@@ -181,7 +181,7 @@ public class NotificationDAO extends DAO {
             statement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("services.dataAccess.NotificationDAO.deleteRecipient error: " + e.getMessage());
+            System.out.println("services.dataAccess.TriggerDAO.deleteRecipient error: " + e.getMessage());
         }
     }
 }

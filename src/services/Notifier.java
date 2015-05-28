@@ -1,6 +1,6 @@
 package services;
 
-import models.Notification;
+import models.Trigger;
 import models.Observation;
 
 import javax.mail.MessagingException;
@@ -11,39 +11,39 @@ import java.util.function.Predicate;
 
 public class Notifier {
 
-    private static List<Notification> activeNotifications = new ArrayList<>();
+    private static List<Trigger> activeTriggers = new ArrayList<>();
 
-    public static void processNotifications(List<Notification> notifications,
-                              Predicate<Notification> validator,
-                              Consumer<Notification> processor) {
+    public static void processNotifications(List<Trigger> triggers,
+                              Predicate<Trigger> validator,
+                              Consumer<Trigger> processor) {
 
-        notifications.forEach( notification -> {
+        triggers.forEach( notification -> {
 
-            if (validator.test(notification) && !activeNotifications.contains(notification)) {
+            if (validator.test(notification) && !activeTriggers.contains(notification)) {
 
-                // Notification is valid and new
+                // Trigger is valid and new
                 processor.accept(notification);
-                activeNotifications.add(notification);
+                activeTriggers.add(notification);
             }
 
-            else if (activeNotifications.contains(notification)) {
-                activeNotifications.remove(notification);
+            else if (activeTriggers.contains(notification)) {
+                activeTriggers.remove(notification);
             }
         });
     }
 
-    public static void sendAlert(Notification notification, String label, Observation observation) {
+    public static void sendAlert(Trigger trigger, String label, Observation observation) {
 
         String message = String.format(
                 "Weather Tracker Alert:\n " +
                 "%s reported a value of %.1f.\n\n" +
                 "You receive an alert when %s reports %s%.1f.",
                 label, observation.getValue(),
-                label, notification.getThreshold().getOperator(),
-                notification.getThreshold().getValue());
+                label, trigger.getThreshold().getOperator(),
+                trigger.getThreshold().getValue());
 
         try {
-            SmtpMessage.sendEmail(notification.getRecipients(), "Weather Tracker Alert", message);
+            SmtpMessage.sendEmail(trigger.getRecipients(), "Weather Tracker Alert", message);
         } catch (MessagingException e) {
             System.out.println("services.Notifier.sendAlert Message Error" + e.getMessage());
         }

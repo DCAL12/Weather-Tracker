@@ -8,7 +8,7 @@ abstract class DAO {
 
     private static class DatabaseConfiguration {
         private static final String URI = "jdbc:mysql://localhost:3306/weather";
-        private static final String USERNAME = "user";
+        private static final String USERNAME = "weatherman";
         private static final String PASSWORD = "RLXREL4Z3VfWZV54";
         private static final String DRIVER = "com.mysql.jdbc.Driver";
     }

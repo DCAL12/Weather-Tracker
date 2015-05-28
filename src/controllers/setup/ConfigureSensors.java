@@ -2,8 +2,7 @@ package controllers.setup;
 
 import models.Observation;
 import models.Sensor;
-import services.Notifier;
-import services.dataAccess.NotificationDAO;
+import services.dataAccess.TriggerDAO;
 import services.dataAccess.ObservationDAO;
 import services.dataAccess.SensorDAO;
 import util.BuildJSON;
@@ -23,7 +22,7 @@ public class ConfigureSensors extends HttpServlet {
 
     private static SensorDAO sensorDAO = SensorDAO.getInstance();
     private static ObservationDAO observationDAO = ObservationDAO.getInstance();
-    private static NotificationDAO notificationDAO = NotificationDAO.getInstance();
+    private static TriggerDAO triggerDAO = TriggerDAO.getInstance();
 
     private static Hashtable<Integer, Sensor> availableSensors = new Hashtable<>();
     private static Hashtable<Integer, TimerTask> observationRecorders = new Hashtable<>();
@@ -58,7 +57,7 @@ public class ConfigureSensors extends HttpServlet {
 
                     // Trigger new, valid notification alerts
 //                    Notifier.processNotifications(
-//                            notificationDAO.getNotifications(sensorID),
+//                            triggerDAO.getTriggers(sensorID),
 //                            notification -> notification.getThreshold().isExceeded(observation.getValue()),
 //                            validNotification -> validNotification
 //                                    .getRecipients()

@@ -4,11 +4,11 @@
 
     function main() {
 
-        var notificationsTable = document.getElementById("notifications"),
+        var notificationsTable = document.getElementById("triggers"),
             message = document.getElementById("message");
 
         var request = new XMLHttpRequest();
-        request.open('GET', '/notifications/getNotifications');
+        request.open('GET', '/triggers/getTriggers');
 
         message.textContent = "loading...";
 
@@ -17,7 +17,7 @@
             var sensors = JSON.parse(this.responseText);
             if(sensors.length > 0) {
 
-                /*Build Notification Table with notifications grouped by sensor:
+                /*Build Trigger Table with triggers grouped by sensor:
                  *
                  * sensor        trigger     recipients
                  * temperature   <5          bob@home.net
@@ -41,45 +41,50 @@
                     sensorElement.textContent = sensor.label;
 
                     // Create a table row for each sensor notification
-                    sensor.notifications.forEach(function (notification) {
-                        var triggerRow = document.createElement("tr"),
-                            triggerElement = document.createElement("td"),
-                            recipientRow = document.createElement("tr"),
-                            recipientElement = document.createElement("td"),
-                            recipientList = document.createElement("ul");
+                    if (sensor.notifications) {
+                        sensor.notifications.forEach(function (notification) {
+                            var triggerRow = document.createElement("tr"),
+                                triggerElement = document.createElement("td"),
+                                recipientRow = document.createElement("tr"),
+                                recipientElement = document.createElement("td"),
+                                recipientList = document.createElement("ul");
 
-                        triggerRow.id = 'notification:' + notification.id + '.trigger';
-                        recipientRow.id = 'notification:' + notification.id + '.recipients';
-                        recipientList.id = 'notification:' + notification.id + '.recipientsList';
+                            triggerRow.id = 'notification:' + notification.id + '.trigger';
+                            recipientRow.id = 'notification:' + notification.id + '.recipients';
+                            recipientList.id = 'notification:' + notification.id + '.recipientsList';
 
-                        triggerElement.textContent =
-                            notification.threshold.operatorSymbol
-                            + " "
-                            + notification.threshold.value + " ";
-                        triggerElement.insertAdjacentHTML('beforeend',
-                            '<span onclick="deleteNotification(sensor.id, notification.id)">X</span>');
+                            triggerElement.textContent =
+                                notification.threshold.operatorSymbol
+                                + " "
+                                + notification.threshold.value + " ";
+                            triggerElement.insertAdjacentHTML('beforeend',
+                                '<span onclick="deleteNotification(sensor.id, notification.id)">X</span>');
 
-                        // create a list for each of the notification's recipients
-                        notification.recipients.forEach(function (recipient) {
+                            // create a list for each of the notification's recipients
+                            notification.recipients.forEach(function (recipient) {
 
-                            var recipientItem = document.createElement("li"),
-                                deleteOption =
-                                    '<span onclick="deleteRecipient(notification.id, recipient)">X</span>';
+                                var recipientItem = document.createElement("li"),
+                                    deleteOption =
+                                        '<span onclick="deleteRecipient(notification.id, recipient)">X</span>';
 
-                            recipientItem.textContent = recipient;
-                            recipientItem.id = 'notification:' + notification.id + '-' + recipient;
-                            recipientItem.insertAdjacentHTML('beforeend', deleteOption);
-                            recipientList.appendChild(recipientItem);
+                                recipientItem.textContent = recipient;
+                                recipientItem.id = 'notification:' + notification.id + '-' + recipient;
+                                recipientItem.insertAdjacentHTML('beforeend', deleteOption);
+                                recipientList.appendChild(recipientItem);
+                            });
+                            recipientElement.appendChild(recipientList);
+                            recipientRow.appendChild(recipientElement);
+                            recipientTable.appendChild(recipientRow);
+                            recipientColumn.appendChild(recipientTable);
+
+                            triggerRow.appendChild(triggerElement);
+                            triggerTable.appendChild(triggerRow);
+                            triggerColumn.appendChild(triggerTable);
                         });
-                        recipientElement.appendChild(recipientList);
-                        recipientRow.appendChild(recipientElement);
-                        recipientTable.appendChild(recipientRow);
-                        recipientColumn.appendChild(recipientTable);
-
-                        triggerRow.appendChild(triggerElement);
-                        triggerTable.appendChild(triggerRow);
-                        triggerColumn.appendChild(triggerTable);
-                    });
+                    }
+                    else {
+                       triggerColumn.textContent = "none defined";
+                    }
 
                     sensorRow.appendChild(sensorElement);
                     sensorRow.appendChild(triggerColumn);
@@ -106,7 +111,7 @@
             data.append('notificationID', notificationID);
             data.append('email', email);
 
-            deleteRecipientRequest.open('POST', '/notifications/recipients/delete');
+            deleteRecipientRequest.open('POST', '/triggers/recipients/delete');
             deleteRecipientRequest.onreadystatechange = function () {
                 if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status !== 200) {
                     alert('Something went wrong...');
@@ -130,7 +135,7 @@
 
             data.append('notificationID', notificationID);
 
-            deleteNotificationRequest.open('POST', '/notifications/delete');
+            deleteNotificationRequest.open('POST', '/triggers/delete');
             deleteNotificationRequest.onreadystatechange = function () {
                 if (deleteNotificationRequest.readyState === 4 && deleteNotificationRequest.status !== 200) {
                     alert('Something went wrong...');

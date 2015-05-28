@@ -1,8 +1,8 @@
-package controllers.notifications;
+package controllers.triggers;
 
-import models.Notification;
+import models.Trigger;
 import models.Threshold;
-import services.dataAccess.NotificationDAO;
+import services.dataAccess.TriggerDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,37 +12,37 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet(name = "AddNotification", urlPatterns = "/notifications/add")
-public class AddNotification extends HttpServlet {
+@WebServlet(name = "AddTrigger", urlPatterns = "/triggers/add")
+public class AddTrigger extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        NotificationDAO notificationDAO = NotificationDAO.getInstance();
+        TriggerDAO triggerDAO = TriggerDAO.getInstance();
 
         int sensorID = Integer.parseInt(request.getParameter("sensorID"));
         String operator = request.getParameter("operator");
         float thresholdValue = Float.parseFloat(request.getParameter("thresholdValue"));
         String email = request.getParameter("email");
 
-        Notification requestedNotification =
-                new Notification(sensorID,
+        Trigger requestedTrigger =
+                new Trigger(sensorID,
                         new Threshold(Threshold.Operator.valueOf(operator), thresholdValue));
-        Optional<Notification> existingNotification;
+        Optional<Trigger> existingNotification;
 
-        existingNotification = notificationDAO.getNotifications(sensorID)
+        existingNotification = triggerDAO.getTriggers(sensorID)
                 .stream()
                 .filter(notification ->
                         notification.getSensorID()
-                            == requestedNotification.getSensorID()
+                            == requestedTrigger.getSensorID()
                         && notification.getThreshold()
-                            .equals(requestedNotification.getThreshold())
+                            .equals(requestedTrigger.getThreshold())
                 )
                 .findFirst();
 
         if (existingNotification.isPresent()) {
-            notificationDAO.addRecipient(existingNotification.get().getId(), email);
+            triggerDAO.addRecipient(existingNotification.get().getId(), email);
         }
         else {
-            notificationDAO.addNotification(sensorID, requestedNotification, email);
+            triggerDAO.addTrigger(sensorID, requestedTrigger, email);
         }
     }
 

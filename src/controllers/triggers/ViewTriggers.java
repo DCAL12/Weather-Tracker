@@ -1,6 +1,6 @@
-package controllers.notifications;
+package controllers.triggers;
 
-import services.dataAccess.NotificationDAO;
+import util.HTMLPageBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,20 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "DeleteRecipient", urlPatterns = "/notifications/recipients/delete")
-public class DeleteRecipient extends HttpServlet {
+@WebServlet(name = "ManageTriggers", urlPatterns = "/triggers")
+public class ViewTriggers extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        NotificationDAO notificationDAO = NotificationDAO.getInstance();
-
-        notificationDAO.deleteRecipient(
-                Integer.parseInt(request.getParameter("notificationID")),
-                request.getParameter("email")
-        );
 
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        HTMLPageBuilder html = new HTMLPageBuilder(getServletContext(), "/views/triggers.html");
+        html.setContent("{{title}}", "Manage Triggers");
+
+        response.setContentType("text/html");
+        response.getWriter().println(html);
+        response.getWriter().close();
     }
 }

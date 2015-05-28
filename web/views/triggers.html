@@ -1,0 +1,73 @@
+<h2>Manage Notification Triggers</h2>
+
+<h3>Active Triggers</h3>
+<table id="triggers">
+    <tr>
+        <th>Sensor</th>
+        <th>Trigger</th>
+        <th>Recipients</th>
+    </tr>
+    <!--data rows dynamically added by setupController-->
+</table>
+
+<p id="message"></p>
+
+<h3>Add Trigger</h3>
+<form action="/triggers/add" method="post" id="addTrigger">
+
+    <table>
+        <tr>
+            <td>
+                <label for="selectSensor">Sensor:</label>
+            </td>
+            <td>
+                <select name="sensorID" id="selectSensor" required>
+                    <option value="0">temperature</option>
+                    <option value="1">humidity</option>
+                    <option value="2">light</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="operator">Operator:</label>
+            </td>
+            <td>
+                <select name="operator" id="operator" required>
+                    <option value="EQUALS">=</option>
+                    <option value="NOT_EQUAL">!=</option>
+                    <option value="GREATER_THAN" selected>&GT;</option>
+                    <option value="LESS_THAN">&LT;</option>
+                    <option value="GREATER_THAN_OR_EQUAL">&ge;</option>
+                    <option value="LESS_THAN_OR_EQUAL">&le;</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="thresholdValue">Threshold:</label>
+            </td>
+            <td>
+                <input id="thresholdValue" type="text" name="thresholdValue" required>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label for="email">Email:</label>
+            </td>
+            <td>
+                <input id="email" type="text" name="email" required>
+            </td>
+        </tr>
+    </table>
+
+    <input type="submit" id="submitAddTrigger">
+</form>
+
+<footer>
+    <script src="../javascript/triggerTableController.js"></script>
+    <script src="../javascript/addTriggerController.js"></script>
+</footer>

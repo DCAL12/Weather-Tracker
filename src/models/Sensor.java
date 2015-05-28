@@ -10,7 +10,7 @@ public class Sensor {
     protected String port;
     private boolean enabled;
     private List<Observation> observations;
-    private List<Notification> notifications;
+    private List<Trigger> triggers;
 
     public Sensor(int id, String label, String port) {
         this.id = id;
@@ -47,7 +47,7 @@ public class Sensor {
         this.observations = observations;
     }
 
-    public void setNotifications(List<Notification> notifications) {
-        this.notifications = notifications;
+    public void setTriggers(List<Trigger> triggers) {
+        this.triggers = triggers;
     }
 }

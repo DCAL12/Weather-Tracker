@@ -13,6 +13,7 @@
         request.onload = function() {
 
             var sensors = JSON.parse(this.responseText);
+            console.log(sensors);
 
             sensors.forEach(function(sensor) {
 
@@ -21,7 +22,10 @@
                 var dataRow = document.createElement("tr"),
                     labelElement = document.createElement("td");
 
-                if(sensor.observations.length > 0) {
+                labelElement.textContent = sensor.label;
+                dataRow.appendChild(labelElement);
+
+                if(sensor.observations) {
                     var countElement = document.createElement("td"),
                         averageElement = document.createElement("td"),
                         stdDevElement = document.createElement("td"),
@@ -40,7 +44,6 @@
                         standardDeviation: statisticsUtility.standardDeviation(data)
                     };
 
-                    labelElement.textContent = sensor.label;
                     countElement.textContent = statistics.count;
                     averageElement.textContent = statisticsUtility
                         .round(statistics.average, dataPrecision);
@@ -59,7 +62,6 @@
                         + " on "
                         + sensor.observations[0].timeStamp;
 
-                    dataRow.appendChild(labelElement);
                     dataRow.appendChild(countElement);
                     dataRow.appendChild(averageElement);
                     dataRow.appendChild(stdDevElement);
