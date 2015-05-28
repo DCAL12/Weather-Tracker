@@ -54,7 +54,9 @@
                                 + trigger.threshold.value + " ";
 
                             deleteTriggerButton.textContent = "x";
-                            deleteTriggerButton.onclick = deleteTrigger(trigger);
+                            deleteTriggerButton.onclick = function() {
+                                deleteTrigger(trigger);
+                            };
 
                             triggerHeaderRow.appendChild(triggerHeaderElement);
                             deleteTriggerElement.appendChild(deleteTriggerButton);
@@ -73,7 +75,9 @@
                                     recipientRow.id = "recipient:" + trigger.id + "-" + recipient;
                                     recipientElement.textContent = recipient;
                                     deleteRecipientButton.textContent = "x";
-                                    deleteRecipientButton.onclick = deleteRecipient(trigger.id, recipient);
+                                    deleteRecipientButton.onclick = function() {
+                                        deleteRecipient(trigger.id, recipient);
+                                    };
 
                                     recipientRow.appendChild(recipientElement);
                                     deleteRecipientElement.appendChild(deleteRecipientButton);
@@ -120,7 +124,8 @@
     }
 
     function deleteTrigger(trigger) {
-        console.log('deleteTrigger');
+        console.log('deleteTrigger: ');
+        console.log(trigger);
         var deleteTriggerRequest = new XMLHttpRequest(),
             notificationTable = document.getElementById("trigger:" + trigger.id),
             notificationElement = document.getElementById("sensor:" + trigger.sensorID);

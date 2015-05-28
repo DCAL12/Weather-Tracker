@@ -14,7 +14,6 @@
         request.onload = function() {
 
             var sensors = JSON.parse(this.responseText);
-            console.log(sensors);
 
             sensors.forEach(function(sensor) {
 
