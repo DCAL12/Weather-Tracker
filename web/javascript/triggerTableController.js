@@ -1,5 +1,5 @@
 'use strict';
-var triggerTable = function() {
+(function() {
 
     window.addEventListener('load', main);
 
@@ -20,76 +20,76 @@ var triggerTable = function() {
 
                 /*Build Trigger Table with triggers grouped by sensor:
                  *
-                 * sensor        trigger     recipients
-                 * temperature   <5          bob@home.net
-                 *                           bill@home.net
+                 * sensor        notification settings
+                 * temperature   <5
+                 *                bob@home.net
+                 *                bill@home.net
                  *
-                 *               >=30        bob@home.net
+                 *               >=30
+                 *                bob@home.net
                  */
 
                 sensors.forEach(function(sensor) {
 
                     var sensorRow = document.createElement("tr"),
                         sensorElement = document.createElement("td"),
-                        triggerColumn = document.createElement("td"),
-                        triggerTable = document.createElement("table"),
-                        recipientColumn = document.createElement("td"),
-                        recipientTable = document.createElement("table");
+                        notificationElement = document.createElement("td");
 
-                    triggerTable.id = sensor.id + '.triggers';
-                    recipientTable.id = sensor.id + '.recipients';
-
+                    notificationElement.id = "sensor:" + sensor.id;
                     sensorElement.textContent = sensor.label;
 
-                    // Create a table row for each sensor trigger
+                    // Create a table for each sensor trigger
                     if (sensor.triggers) {
                         sensor.triggers.forEach(function(trigger) {
-                            var triggerRow = document.createElement("tr"),
-                                triggerElement = document.createElement("td"),
-                                recipientRow = document.createElement("tr"),
-                                recipientElement = document.createElement("td"),
-                                recipientList = document.createElement("ul");
+                            var notificationTable = document.createElement("table"),
+                                triggerHeaderRow = document.createElement("tr"),
+                                triggerHeaderElement = document.createElement("th"),
+                                deleteTriggerElement = document.createElement("th"),
+                                deleteTriggerButton = document.createElement("button");
 
-                            triggerRow.id = 'trigger:' + trigger.id + '.trigger';
-                            recipientRow.id = 'trigger:' + trigger.id + '.recipients';
-                            recipientList.id = 'trigger:' + trigger.id + '.recipientsList';
-
-                            triggerElement.textContent =
+                            notificationTable.id = "trigger:" + trigger.id;
+                            triggerHeaderElement.textContent =
                                 trigger.threshold.operatorSymbol
                                 + " "
                                 + trigger.threshold.value + " ";
-                            triggerElement.insertAdjacentHTML('beforeend',
-                                '<button onclick="triggerTable.deleteTrigger(sensor.id, trigger.id)">x</button>');
 
-                            // create a list for each of the trigger's recipients
-                            trigger.recipients.forEach(function(recipient) {
+                            deleteTriggerButton.textContent = "x";
+                            deleteTriggerButton.onclick = deleteTrigger(trigger);
 
-                                var recipientItem = document.createElement("li"),
-                                    deleteOption =
-                                        '<button onclick="triggerTable.deleteRecipient(trigger.id, recipient)">x</button>';
+                            triggerHeaderRow.appendChild(triggerHeaderElement);
+                            deleteTriggerElement.appendChild(deleteTriggerButton);
+                            triggerHeaderRow.appendChild(deleteTriggerElement);
+                            notificationTable.appendChild(triggerHeaderRow);
 
-                                recipientItem.textContent = recipient;
-                                recipientItem.id = 'trigger:' + trigger.id + '-' + recipient;
-                                recipientItem.insertAdjacentHTML('beforeend', deleteOption);
-                                recipientList.appendChild(recipientItem);
-                            });
-                            recipientElement.appendChild(recipientList);
-                            recipientRow.appendChild(recipientElement);
-                            recipientTable.appendChild(recipientRow);
-                            recipientColumn.appendChild(recipientTable);
+                            // create a list of each of the trigger's recipients
+                            if (trigger.recipients) {
+                                trigger.recipients.forEach(function(recipient) {
 
-                            triggerRow.appendChild(triggerElement);
-                            triggerTable.appendChild(triggerRow);
-                            triggerColumn.appendChild(triggerTable);
+                                    var recipientRow = document.createElement("tr"),
+                                        recipientElement = document.createElement("td"),
+                                        deleteRecipientElement = document.createElement("td"),
+                                        deleteRecipientButton = document.createElement("button");
+
+                                    recipientRow.id = "recipient:" + trigger.id + "-" + recipient;
+                                    recipientElement.textContent = recipient;
+                                    deleteRecipientButton.textContent = "x";
+                                    deleteRecipientButton.onclick = deleteRecipient(trigger.id, recipient);
+
+                                    recipientRow.appendChild(recipientElement);
+                                    deleteRecipientElement.appendChild(deleteRecipientButton);
+                                    recipientRow.appendChild(deleteRecipientElement);
+                                    notificationTable.appendChild(recipientRow);
+                                });
+                            }
+                            notificationElement.appendChild(notificationTable);
                         });
                     }
                     else {
-                       triggerColumn.textContent = "none defined";
+                       notificationElement.textContent = "none defined";
                     }
 
                     sensorRow.appendChild(sensorElement);
-                    sensorRow.appendChild(triggerColumn);
-                    sensorRow.appendChild(recipientColumn);
+                    sensorRow.appendChild(notificationElement);
                     triggersTable.appendChild(sensorRow);
                 });
                 message.textContent = "";
@@ -100,55 +100,43 @@ var triggerTable = function() {
         };
         request.send();
     }
+    function deleteRecipient(triggerID, email) {
+        console.log('deleteRecipient');
+        var deleteRecipientRequest = new XMLHttpRequest(),
+            recipientRow = document.getElementById("recipient:" + triggerID + "-" + email),
+            notificationTable = document.getElementById("trigger:" + triggerID);
 
-    return {
-        deleteRecipient: function(triggerID, email) {
-            console.log('deleteRecipient');
-            var deleteRecipientRequest = new XMLHttpRequest(),
-                data = new FormData(),
-                recipientList = document.getElementById('trigger:' + triggerID + '.recipientsList'),
-                recipientElement = document.getElementById('trigger:' + triggerID + '-' + email);
-
-            data.append('triggerID', triggerID);
-            data.append('email', email);
-
-            deleteRecipientRequest.open('POST', '/triggers/recipients/delete');
-            deleteRecipientRequest.onreadystatechange = function () {
-                if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status !== 200) {
-                    alert('Something went wrong...');
-                }
-                else if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status === 200) {
-                    recipientList.removeChild(recipientElement);
-                    alert(email + ' has been removed');
-                }
-            };
-            deleteRecipientRequest.send(data);
-        },
-
-        deleteTrigger: function(sensorID, triggerID) {
-            console.log('deleteTrigger');
-            var deleteTriggerRequest = new XMLHttpRequest(),
-                data = new FormData(),
-                triggerTable = document.getElementById(sensorID + '.triggers'),
-                recipientTable = document.getElementById(sensorID + '.recipients'),
-                triggerRow = document.getElementById('trigger:' + triggerID + '.trigger'),
-                recipientRow = document.getElementById('trigger:' + triggerID + '.recipients');
-
-            data.append('triggerID', triggerID);
-
-            deleteTriggerRequest.open('POST', '/triggers/delete');
-            deleteTriggerRequest.onreadystatechange = function () {
-                if (deleteTriggerRequest.readyState === 4 && deleteTriggerRequest.status !== 200) {
-                    alert('Something went wrong...');
-                }
-                else if (deleteTriggerRequest.readyState === 4 && deleteTriggerRequest.status === 200) {
-                    triggerTable.removeChild(triggerRow);
-                    recipientTable.removeChild(recipientRow);
-                    alert('trigger has been removed');
-                }
-            };
-            deleteTriggerRequest.send(data);
-        }
+        deleteRecipientRequest.open('GET', '/triggers/recipients/delete?triggerID=' + triggerID + '&email=' + email);
+        deleteRecipientRequest.onreadystatechange = function () {
+            if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status !== 200) {
+                alert('Something went wrong...');
+            }
+            else if (deleteRecipientRequest.readyState === 4 && deleteRecipientRequest.status === 200) {
+                notificationTable.removeChild(recipientRow);
+                alert(email + ' has been removed');
+            }
+        };
+        deleteRecipientRequest.send();
     }
-}();
+
+    function deleteTrigger(trigger) {
+        console.log('deleteTrigger');
+        var deleteTriggerRequest = new XMLHttpRequest(),
+            notificationTable = document.getElementById("trigger:" + trigger.id),
+            notificationElement = document.getElementById("sensor:" + trigger.sensorID);
+
+        deleteTriggerRequest.open('GET', '/triggers/delete?triggerID=' + trigger.id);
+        deleteTriggerRequest.onreadystatechange = function () {
+            if (deleteTriggerRequest.readyState === 4 && deleteTriggerRequest.status !== 200) {
+                alert('Something went wrong...');
+            }
+            else if (deleteTriggerRequest.readyState === 4 && deleteTriggerRequest.status === 200) {
+                notificationElement.removeChild(notificationTable);
+                alert('trigger has been removed');
+            }
+        };
+        deleteTriggerRequest.send();
+    }
+
+}());
 

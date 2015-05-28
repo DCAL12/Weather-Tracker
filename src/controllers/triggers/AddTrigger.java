@@ -31,11 +31,11 @@ public class AddTrigger extends HttpServlet {
 
         existingTrigger = triggerDAO.getTriggers(sensorID)
                 .stream()
-                .filter(notification ->
-                        notification.getSensorID()
+                .filter(trigger ->
+                        trigger.getSensorID()
                             == requestedTrigger.getSensorID()
-                        && notification.getThreshold()
-                            .equals(requestedTrigger.getThreshold())
+                        && trigger.getThreshold().toString()
+                            .equals(requestedTrigger.getThreshold().toString())
                 )
                 .findFirst();
 
@@ -44,8 +44,8 @@ public class AddTrigger extends HttpServlet {
             triggerDAO.addRecipient(existingTrigger.get().getId(), email);
         }
         else {
-            System.out.println("Creating trigger");
-            triggerDAO.addTrigger(sensorID, requestedTrigger, email);
+            System.out.println("Creating new trigger");
+//            triggerDAO.addTrigger(sensorID, requestedTrigger, email);
         }
     }
 
