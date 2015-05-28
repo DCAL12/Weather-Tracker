@@ -92,7 +92,7 @@ public class TriggerDAO extends DAO {
         }
     }
 
-    public void addRecipient(int notificationID, String email) {
+    public void addRecipient(int triggerID, String email) {
 
         String sql =
                 "INSERT INTO Recipient (" +
@@ -102,34 +102,13 @@ public class TriggerDAO extends DAO {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ){
-            statement.setInt(1, notificationID);
+            statement.setInt(1, triggerID);
             statement.setString(2, email);
 
             statement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("services.dataAccess.TriggerDAO.addRecipient error: " + e.getMessage());
-        }
-    }
-
-    public void updateTrigger(int notificationID, Trigger trigger) {
-
-        String sql =
-                "UPDATE `Trigger` SET " +
-                        "operator = ?, " +
-                        "threshold = ?" +
-                        "WHERE id = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ){
-            statement.setInt(1, trigger.getThreshold().getOperator().ordinal());
-            statement.setFloat(2, trigger.getThreshold().getValue());
-            statement.setInt(3, notificationID);
-
-            statement.executeUpdate();
-
-        } catch (SQLException e) {
-            System.out.println("services.dataAccess.TriggerDAO.updateTrigger error: " + e.getMessage());
         }
     }
 
@@ -170,13 +149,13 @@ public class TriggerDAO extends DAO {
         }
     }
 
-    private void deleteRecipients(int notificationID) {
+    private void deleteRecipients(int triggerID) {
 
         String sql = "DELETE FROM Recipient WHERE trigger_id = ? ";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ){
-            statement.setInt(1, notificationID);
+            statement.setInt(1, triggerID);
 
             statement.executeUpdate();
 

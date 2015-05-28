@@ -2,6 +2,7 @@ package controllers.setup;
 
 import models.Observation;
 import models.Sensor;
+import services.Notifier;
 import services.dataAccess.TriggerDAO;
 import services.dataAccess.ObservationDAO;
 import services.dataAccess.SensorDAO;
@@ -21,12 +22,13 @@ public class ConfigureSensors extends HttpServlet {
     private static final long OBSERVATION_SAMPLE_INTERVAL = 1000 * 3; // in milliseconds
 
     private static SensorDAO sensorDAO = SensorDAO.getInstance();
-    private static ObservationDAO observationDAO = ObservationDAO.getInstance();
-    private static TriggerDAO triggerDAO = TriggerDAO.getInstance();
+    private ObservationDAO observationDAO = ObservationDAO.getInstance();
+    private TriggerDAO triggerDAO = TriggerDAO.getInstance();
 
     private static Hashtable<Integer, Sensor> availableSensors = new Hashtable<>();
-    private static Hashtable<Integer, TimerTask> observationRecorders = new Hashtable<>();
-    private static Timer timer = new Timer();
+    private Hashtable<Integer, TimerTask> observationRecorders = new Hashtable<>();
+    private Timer timer = new Timer();
+    private Notifier notifier = new Notifier();
 
     static {
         sensorDAO.getSensors()
@@ -56,13 +58,13 @@ public class ConfigureSensors extends HttpServlet {
                     observationDAO.addObservation(sensorID, observation);
 
                     // Trigger new, valid notification alerts
-//                    Notifier.processNotifications(
+//                    notifier.processNotifications(
 //                            triggerDAO.getTriggers(sensorID),
 //                            notification -> notification.getThreshold().isExceeded(observation.getValue()),
 //                            validNotification -> validNotification
 //                                    .getRecipients()
 //                                    .forEach(recipient ->
-//                                            Notifier.sendAlert(validNotification, sensor.getLabel(), observation))
+//                                            notifier.sendAlert(validNotification, sensor.getLabel(), observation))
 //                    );
                 }
             };

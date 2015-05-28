@@ -11,9 +11,9 @@ import java.util.function.Predicate;
 
 public class Notifier {
 
-    private static List<Trigger> activeTriggers = new ArrayList<>();
+    private List<Trigger> activeTriggers = new ArrayList<>();
 
-    public static void processNotifications(List<Trigger> triggers,
+    public void processNotifications(List<Trigger> triggers,
                               Predicate<Trigger> validator,
                               Consumer<Trigger> processor) {
 
@@ -32,7 +32,7 @@ public class Notifier {
         });
     }
 
-    public static void sendAlert(Trigger trigger, String label, Observation observation) {
+    public void sendAlert(Trigger trigger, String label, Observation observation) {
 
         String message = String.format(
                 "Weather Tracker Alert:\n " +
