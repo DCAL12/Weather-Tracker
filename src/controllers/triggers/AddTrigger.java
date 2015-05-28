@@ -2,6 +2,7 @@ package controllers.triggers;
 
 import models.Trigger;
 import models.Threshold;
+import services.dataAccess.SensorDAO;
 import services.dataAccess.TriggerDAO;
 
 import javax.servlet.ServletException;
@@ -26,9 +27,9 @@ public class AddTrigger extends HttpServlet {
         Trigger requestedTrigger =
                 new Trigger(sensorID,
                         new Threshold(Threshold.Operator.valueOf(operator), thresholdValue));
-        Optional<Trigger> existingNotification;
+        Optional<Trigger> existingTrigger;
 
-        existingNotification = triggerDAO.getTriggers(sensorID)
+        existingTrigger = triggerDAO.getTriggers(sensorID)
                 .stream()
                 .filter(notification ->
                         notification.getSensorID()
@@ -38,10 +39,12 @@ public class AddTrigger extends HttpServlet {
                 )
                 .findFirst();
 
-        if (existingNotification.isPresent()) {
-            triggerDAO.addRecipient(existingNotification.get().getId(), email);
+        if (existingTrigger.isPresent()) {
+            System.out.println("Trigger already exists");
+            triggerDAO.addRecipient(existingTrigger.get().getId(), email);
         }
         else {
+            System.out.println("Creating trigger");
             triggerDAO.addTrigger(sensorID, requestedTrigger, email);
         }
     }

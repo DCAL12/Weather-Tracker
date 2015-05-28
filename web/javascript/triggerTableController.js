@@ -1,10 +1,11 @@
-(function() {
+'use strict';
+var triggerTable = function() {
 
     window.addEventListener('load', main);
 
     function main() {
 
-        var notificationsTable = document.getElementById("triggers"),
+        var triggersTable = document.getElementById("triggers"),
             message = document.getElementById("message");
 
         var request = new XMLHttpRequest();
@@ -26,7 +27,7 @@
                  *               >=30        bob@home.net
                  */
 
-                sensors.forEach(function (sensor) {
+                sensors.forEach(function(sensor) {
 
                     var sensorRow = document.createElement("tr"),
                         sensorElement = document.createElement("td"),
@@ -40,35 +41,35 @@
 
                     sensorElement.textContent = sensor.label;
 
-                    // Create a table row for each sensor notification
-                    if (sensor.notifications) {
-                        sensor.notifications.forEach(function (notification) {
+                    // Create a table row for each sensor trigger
+                    if (sensor.triggers) {
+                        sensor.triggers.forEach(function(trigger) {
                             var triggerRow = document.createElement("tr"),
                                 triggerElement = document.createElement("td"),
                                 recipientRow = document.createElement("tr"),
                                 recipientElement = document.createElement("td"),
                                 recipientList = document.createElement("ul");
 
-                            triggerRow.id = 'notification:' + notification.id + '.trigger';
-                            recipientRow.id = 'notification:' + notification.id + '.recipients';
-                            recipientList.id = 'notification:' + notification.id + '.recipientsList';
+                            triggerRow.id = 'trigger:' + trigger.id + '.trigger';
+                            recipientRow.id = 'trigger:' + trigger.id + '.recipients';
+                            recipientList.id = 'trigger:' + trigger.id + '.recipientsList';
 
                             triggerElement.textContent =
-                                notification.threshold.operatorSymbol
+                                trigger.threshold.operatorSymbol
                                 + " "
-                                + notification.threshold.value + " ";
+                                + trigger.threshold.value + " ";
                             triggerElement.insertAdjacentHTML('beforeend',
-                                '<span onclick="deleteNotification(sensor.id, notification.id)">X</span>');
+                                '<button onclick="triggerTable.deleteTrigger(sensor.id, trigger.id)">x</button>');
 
-                            // create a list for each of the notification's recipients
-                            notification.recipients.forEach(function (recipient) {
+                            // create a list for each of the trigger's recipients
+                            trigger.recipients.forEach(function(recipient) {
 
                                 var recipientItem = document.createElement("li"),
                                     deleteOption =
-                                        '<span onclick="deleteRecipient(notification.id, recipient)">X</span>';
+                                        '<button onclick="triggerTable.deleteRecipient(trigger.id, recipient)">x</button>';
 
                                 recipientItem.textContent = recipient;
-                                recipientItem.id = 'notification:' + notification.id + '-' + recipient;
+                                recipientItem.id = 'trigger:' + trigger.id + '-' + recipient;
                                 recipientItem.insertAdjacentHTML('beforeend', deleteOption);
                                 recipientList.appendChild(recipientItem);
                             });
@@ -89,7 +90,7 @@
                     sensorRow.appendChild(sensorElement);
                     sensorRow.appendChild(triggerColumn);
                     sensorRow.appendChild(recipientColumn);
-                    notificationsTable.appendChild(sensorRow);
+                    triggersTable.appendChild(sensorRow);
                 });
                 message.textContent = "";
             }
@@ -100,15 +101,15 @@
         request.send();
     }
 
-
-        function deleteRecipient(notificationID, email) {
-
+    return {
+        deleteRecipient: function(triggerID, email) {
+            console.log('deleteRecipient');
             var deleteRecipientRequest = new XMLHttpRequest(),
                 data = new FormData(),
-                recipientList = document.getElementById('notification:' + notificationID + '.recipientsList'),
-                recipientElement = document.getElementById('notification:' + notificationID + '-' + email);
+                recipientList = document.getElementById('trigger:' + triggerID + '.recipientsList'),
+                recipientElement = document.getElementById('trigger:' + triggerID + '-' + email);
 
-            data.append('notificationID', notificationID);
+            data.append('triggerID', triggerID);
             data.append('email', email);
 
             deleteRecipientRequest.open('POST', '/triggers/recipients/delete');
@@ -122,31 +123,32 @@
                 }
             };
             deleteRecipientRequest.send(data);
-        }
+        },
 
-        function deleteNotification(sensorID, notificationID) {
-
-            var deleteNotificationRequest = new XMLHttpRequest(),
+        deleteTrigger: function(sensorID, triggerID) {
+            console.log('deleteTrigger');
+            var deleteTriggerRequest = new XMLHttpRequest(),
                 data = new FormData(),
                 triggerTable = document.getElementById(sensorID + '.triggers'),
                 recipientTable = document.getElementById(sensorID + '.recipients'),
-                triggerRow = document.getElementById('notification:' + nofificationID + '.trigger'),
-                recipientRow = document.getElementById('notification:' + nofificationID + '.recipients');
+                triggerRow = document.getElementById('trigger:' + triggerID + '.trigger'),
+                recipientRow = document.getElementById('trigger:' + triggerID + '.recipients');
 
-            data.append('notificationID', notificationID);
+            data.append('triggerID', triggerID);
 
-            deleteNotificationRequest.open('POST', '/triggers/delete');
-            deleteNotificationRequest.onreadystatechange = function () {
-                if (deleteNotificationRequest.readyState === 4 && deleteNotificationRequest.status !== 200) {
+            deleteTriggerRequest.open('POST', '/triggers/delete');
+            deleteTriggerRequest.onreadystatechange = function () {
+                if (deleteTriggerRequest.readyState === 4 && deleteTriggerRequest.status !== 200) {
                     alert('Something went wrong...');
                 }
-                else if (deleteNotificationRequest.readyState === 4 && deleteNotificationRequest.status === 200) {
+                else if (deleteTriggerRequest.readyState === 4 && deleteTriggerRequest.status === 200) {
                     triggerTable.removeChild(triggerRow);
                     recipientTable.removeChild(recipientRow);
-                    alert('notification has been removed');
+                    alert('trigger has been removed');
                 }
             };
-            deleteNotificationRequest.send(data);
+            deleteTriggerRequest.send(data);
         }
-}());
+    }
+}();
 

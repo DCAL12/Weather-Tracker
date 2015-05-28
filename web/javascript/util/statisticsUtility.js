@@ -1,4 +1,6 @@
-statisticsUtility = function() {
+'use strict';
+
+var statisticsUtility = function() {
 
     return {
         sum: function (data) {

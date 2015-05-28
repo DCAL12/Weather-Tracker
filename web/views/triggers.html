@@ -13,15 +13,15 @@
 <p id="message"></p>
 
 <h3>Add Trigger</h3>
-<form action="/triggers/add" method="post" id="addTrigger">
+<form action="/triggers/add" method="post" id="addTrigger" onsubmit="AJAXSubmit(this); return false;">
 
     <table>
         <tr>
             <td>
-                <label for="selectSensor">Sensor:</label>
+                <label for="sensorID">Sensor:</label>
             </td>
             <td>
-                <select name="sensorID" id="selectSensor" required>
+                <select name="sensorID" id="sensorID" form="addTrigger" required>
                     <option value="0">temperature</option>
                     <option value="1">humidity</option>
                     <option value="2">light</option>
@@ -34,7 +34,7 @@
                 <label for="operator">Operator:</label>
             </td>
             <td>
-                <select name="operator" id="operator" required>
+                <select name="operator" id="operator" form="addTrigger" required>
                     <option value="EQUALS">=</option>
                     <option value="NOT_EQUAL">!=</option>
                     <option value="GREATER_THAN" selected>&GT;</option>
@@ -69,5 +69,5 @@
 
 <footer>
     <script src="../javascript/triggerTableController.js"></script>
-    <script src="../javascript/addTriggerController.js"></script>
+    <script src="../javascript/util/ajax-service.js"></script>
 </footer>

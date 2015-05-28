@@ -28,6 +28,7 @@ public class GetTriggers extends HttpServlet {
         sensors.forEach(sensor -> sensor.setTriggers(triggerDAO.getTriggers(sensor.getId())));
 
         response.setContentType("application/json");
+        System.out.println(BuildJSON.toJSON(sensors));
         response.getWriter().print(BuildJSON.toJSON(sensors));
         response.getWriter().close();
 
