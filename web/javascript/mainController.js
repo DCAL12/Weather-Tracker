@@ -22,7 +22,6 @@
                 var dataRow = document.createElement("tr"),
                     labelElement = document.createElement("td");
 
-                dataRow.setAttribute("class", "enabled:" + sensor.enabled);
                 labelElement.textContent = sensor.label;
                 dataRow.appendChild(labelElement);
 
@@ -63,6 +62,9 @@
                         + " on "
                         + sensor.observations[0].timeStamp;
 
+                    dataRow.setAttribute("class",
+                        (new Date() - 5000 <= new Date(sensor.observations[0].timeStamp)-0) ? "current" : "stale"
+                    );
                     dataRow.appendChild(countElement);
                     dataRow.appendChild(averageElement);
                     dataRow.appendChild(stdDevElement);

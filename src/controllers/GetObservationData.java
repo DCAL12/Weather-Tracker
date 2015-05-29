@@ -33,6 +33,7 @@ public class GetObservationData extends HttpServlet {
             }
         });
         response.setContentType("application/json");
+        System.out.println(BuildJSON.toJSON(sensors));
         response.getWriter().print(BuildJSON.toJSON(sensors));
         response.getWriter().close();
     }

@@ -1,0 +1,7 @@
+tr.stale {
+    background: gainsboro;
+}
+
+tr.current {
+    background: lightseagreen;
+}
