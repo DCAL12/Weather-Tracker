@@ -22,6 +22,7 @@
                 var dataRow = document.createElement("tr"),
                     labelElement = document.createElement("td");
 
+                dataRow.setAttribute("class", "enabled:" + sensor.enabled);
                 labelElement.textContent = sensor.label;
                 dataRow.appendChild(labelElement);
 

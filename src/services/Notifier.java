@@ -6,6 +6,7 @@ import models.Observation;
 import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -17,17 +18,29 @@ public class Notifier {
                               Predicate<Trigger> validator,
                               Consumer<Trigger> processor) {
 
-        triggers.forEach( notification -> {
+        triggers.forEach( trigger -> {
 
-            if (validator.test(notification) && !activeTriggers.contains(notification)) {
+            Optional<Trigger> existingActiveTrigger;
+
+            existingActiveTrigger = activeTriggers
+                    .stream()
+                    .filter(activeTrigger ->
+                                    activeTrigger.getSensorID()
+                                            == trigger.getSensorID()
+                                        && activeTrigger.getThreshold().toString()
+                                            .equals(trigger.getThreshold().toString())
+                    )
+                    .findFirst();
+
+            if (validator.test(trigger) && !existingActiveTrigger.isPresent()) {
 
                 // Trigger is valid and new
-                processor.accept(notification);
-                activeTriggers.add(notification);
+                processor.accept(trigger);
+                activeTriggers.add(trigger);
             }
 
-            else if (activeTriggers.contains(notification)) {
-                activeTriggers.remove(notification);
+            else if (existingActiveTrigger.isPresent()) {
+                activeTriggers.remove(trigger);
             }
         });
     }
@@ -37,9 +50,9 @@ public class Notifier {
         String message = String.format(
                 "Weather Tracker Alert:\n " +
                 "%s reported a value of %.1f.\n\n" +
-                "You receive an alert when %s reports %s%.1f.",
+                "You receive an alert when %s reports %s",
                 label, observation.getValue(),
-                label, trigger.getThreshold().getOperator(),
+                label, trigger.getThreshold(),
                 trigger.getThreshold().getValue());
 
         try {

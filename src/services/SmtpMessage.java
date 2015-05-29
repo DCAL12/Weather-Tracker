@@ -140,7 +140,5 @@ public class SmtpMessage {
                 transport.close();
             }
 	    }
-
-	    System.out.println("\nMail was sent successfully.");
 	}
 }

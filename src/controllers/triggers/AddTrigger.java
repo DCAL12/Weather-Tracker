@@ -45,7 +45,7 @@ public class AddTrigger extends HttpServlet {
         }
         else {
             System.out.println("Creating new trigger");
-//            triggerDAO.addTrigger(sensorID, requestedTrigger, email);
+            triggerDAO.addTrigger(sensorID, requestedTrigger, email);
         }
     }
 

@@ -58,14 +58,10 @@ public class ConfigureSensors extends HttpServlet {
                     observationDAO.addObservation(sensorID, observation);
 
                     // Trigger new, valid notification alerts
-//                    notifier.processNotifications(
-//                            triggerDAO.getTriggers(sensorID),
-//                            notification -> notification.getThreshold().isExceeded(observation.getValue()),
-//                            validNotification -> validNotification
-//                                    .getRecipients()
-//                                    .forEach(recipient ->
-//                                            notifier.sendAlert(validNotification, sensor.getLabel(), observation))
-//                    );
+                    notifier.processNotifications(
+                        triggerDAO.getTriggers(sensorID),
+                        notification -> notification.getThreshold().isExceeded(observation.getValue()),
+                        validNotification -> notifier.sendAlert(validNotification, sensor.getLabel(), observation));
                 }
             };
             timer.schedule(task, 0, OBSERVATION_SAMPLE_INTERVAL);
